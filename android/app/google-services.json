@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1092079816436",
+    "project_id": "custom-messenger-all",
+    "storage_bucket": "custom-messenger-all.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092079816436:android:f9a818a972cd694f6098a1",
+        "android_client_info": {
+          "package_name": "com.revamph.custom_messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092079816436-6sbbh1p3ejfkv4l52inip0ea2m2ib4u7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHDx2Giyr6rXIOv54bIMioa8Ijiuwx6EU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092079816436-6sbbh1p3ejfkv4l52inip0ea2m2ib4u7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
