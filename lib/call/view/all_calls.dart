@@ -9,11 +9,15 @@ class AllCalls extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: ListView.builder(
-        itemCount: 4,
+        itemCount: 10,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          return const ListTile(
-            leading: CircleAvatar(radius: 30),
+          return ListTile(
+            onTap: () {},
+            leading: const CircleAvatar(radius: 30),
+            title: const Text('Yuvraj Grover'),
+            subtitle: const Text('(3) August 12, 13:26'),
+            trailing: const Icon(Icons.call),
           );
         },
       ),

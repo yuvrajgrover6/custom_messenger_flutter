@@ -21,7 +21,7 @@ class AllChats extends StatelessWidget {
               itemCount: 10,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  onTap: () => Get.to(() => ChatView()),
+                  onTap: () => Get.to(() => const ChatView()),
                   leading: const CircleAvatar(
                     radius: 30,
                   ),

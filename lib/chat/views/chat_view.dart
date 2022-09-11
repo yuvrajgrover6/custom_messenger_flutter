@@ -1,17 +1,23 @@
+import 'dart:io';
+
+import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChatView extends StatelessWidget {
-  ChatView({Key? key}) : super(key: key);
+  const ChatView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Get.put(ChatViewController());
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Material(
           child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             height: height * 0.03,
             color: Colors.blue,
             child: Text(
@@ -20,6 +26,7 @@ class ChatView extends StatelessWidget {
             ),
           ),
         ),
+        titleSpacing: 0,
         leadingWidth: width * 0.19,
         leading: GestureDetector(
           onTap: () => Get.back(),
@@ -34,21 +41,23 @@ class ChatView extends StatelessWidget {
               )),
         ),
         actions: [
-          Icon(Icons.search),
+          const Icon(Icons.search),
           SizedBox(width: width * 0.04),
-          Icon(Icons.call),
+          const Icon(Icons.call),
           PopupMenuButton(itemBuilder: (context) {
-            return [PopupMenuItem(child: Text('Block'))];
+            return [const PopupMenuItem(child: Text('Block'))];
           })
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body: GetBuilder<ChatViewController>(builder: (controller) {
+        return Column(
           children: [
-            Container(
-                height: height * 0.785,
-                child: Container(color: Colors.yellow, width: width)),
-            Container(
+            Expanded(
+              flex: 7,
+              child: Container(
+                  child: Container(color: Colors.yellow, width: width)),
+            ),
+            SizedBox(
                 height: height * 0.1,
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -66,30 +75,94 @@ class ChatView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
+                            alignment: Alignment.center,
+                            height: height,
+                            width: width * 0.1,
+                            child: const Icon(
+                              Icons.attach_file,
+                              color: Colors.grey,
+                            )),
+                        Container(
                           alignment: Alignment.center,
                           padding: EdgeInsets.only(bottom: height * 0.008),
-                          width: width * 0.75,
+                          width: width * 0.68,
                           child: TextFormField(
+                              focusNode: controller.focusNode,
+                              controller: controller.msgController,
                               style: TextStyle(fontSize: height * 0.022),
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
                               )),
                         ),
-                        Container(
-                            alignment: Alignment.center,
-                            height: height,
-                            width: width * 0.1,
-                            child: const Icon(
-                              Icons.emoji_emotions,
-                              color: Colors.grey,
-                            ))
+                        GestureDetector(
+                          onTap: () {
+                            controller.isEmojiVisible.value =
+                                !controller.isEmojiVisible.value;
+                            controller.focusNode.unfocus();
+
+                            // controller.focusNode.canRequestFocus = true;
+                          },
+                          child: Container(
+                              alignment: Alignment.center,
+                              height: height,
+                              width: width * 0.1,
+                              child: const Icon(
+                                Icons.emoji_emotions,
+                                color: Colors.grey,
+                              )),
+                        ),
                       ],
                     ),
                   ),
                 )),
+            Obx(
+              () => Offstage(
+                offstage: !controller.isEmojiVisible.value,
+                child: SizedBox(
+                  height: 250,
+                  child: EmojiPicker(
+                      textEditingController: controller.msgController,
+                      onEmojiSelected: (Category category, Emoji emoji) {
+                        controller.msgController.text =
+                            controller.msgController.text + emoji.emoji;
+                      },
+                      onBackspacePressed: () {
+                        (controller.msgController.text.length - 1);
+                      },
+                      config: Config(
+                          columns: 7,
+                          emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                          verticalSpacing: 0,
+                          horizontalSpacing: 0,
+                          gridPadding: EdgeInsets.zero,
+                          initCategory: Category.RECENT,
+                          bgColor: const Color(0xFFF2F2F2),
+                          indicatorColor: Colors.blue,
+                          iconColor: Colors.grey,
+                          iconColorSelected: Colors.blue,
+                          progressIndicatorColor: Colors.blue,
+                          backspaceColor: Colors.blue,
+                          skinToneDialogBgColor: Colors.white,
+                          skinToneIndicatorColor: Colors.grey,
+                          enableSkinTones: true,
+                          showRecentsTab: true,
+                          recentsLimit: 28,
+                          replaceEmojiOnLimitExceed: false,
+                          noRecents: const Text(
+                            'No Recents',
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.black26),
+                            textAlign: TextAlign.center,
+                          ),
+                          tabIndicatorAnimDuration: kTabScrollDuration,
+                          categoryIcons: const CategoryIcons(),
+                          buttonMode: ButtonMode.MATERIAL)),
+                ),
+              ),
+            ),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 }

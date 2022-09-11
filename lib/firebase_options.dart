@@ -45,17 +45,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCF8B87F5P2TarfHGWxJNsRRGetHVasuiE',
-    appId: '1:1092079816436:web:8717db861e0a43c06098a1',
+    appId: '1:1092079816436:web:044f8c1e62933ee26098a1',
     messagingSenderId: '1092079816436',
     projectId: 'custom-messenger-all',
     authDomain: 'custom-messenger-all.firebaseapp.com',
     storageBucket: 'custom-messenger-all.appspot.com',
-    measurementId: 'G-X4TXFFEVGS',
+    measurementId: 'G-6FSM1FX7XM',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAHDx2Giyr6rXIOv54bIMioa8Ijiuwx6EU',
-    appId: '1:1092079816436:android:f9a818a972cd694f6098a1',
+    appId: '1:1092079816436:android:f0635d878267dca26098a1',
     messagingSenderId: '1092079816436',
     projectId: 'custom-messenger-all',
     storageBucket: 'custom-messenger-all.appspot.com',
@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCm9oWky1R4cTR5VtayljpvvgbAK90Ddrc',
-    appId: '1:1092079816436:ios:cb467e84bf3869226098a1',
+    appId: '1:1092079816436:ios:41e53e0622603d356098a1',
     messagingSenderId: '1092079816436',
     projectId: 'custom-messenger-all',
     storageBucket: 'custom-messenger-all.appspot.com',
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCm9oWky1R4cTR5VtayljpvvgbAK90Ddrc',
-    appId: '1:1092079816436:ios:cb467e84bf3869226098a1',
+    appId: '1:1092079816436:ios:41e53e0622603d356098a1',
     messagingSenderId: '1092079816436',
     projectId: 'custom-messenger-all',
     storageBucket: 'custom-messenger-all.appspot.com',

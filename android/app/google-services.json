@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1092079816436:android:f9a818a972cd694f6098a1",
+        "mobilesdk_app_id": "1:1092079816436:android:f0635d878267dca26098a1",
         "android_client_info": {
           "package_name": "com.revamph.custom_messenger"
         }
@@ -29,6 +29,13 @@
             {
               "client_id": "1092079816436-6sbbh1p3ejfkv4l52inip0ea2m2ib4u7.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1092079816436-ervqted0qlv3ds9dsdv2v3d1egtnobp6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.customMessenger"
+              }
             }
           ]
         }
