@@ -29,7 +29,7 @@ class AuthController extends GetxController {
         if (!isLoggedIn) {
           final userSnap = await FirebaseFirestore.instance
               .collection('users')
-              .doc(user.uid)
+              .doc('${user.displayName}')
               .get();
           if (userSnap.exists) {
             myUser.value =
@@ -45,8 +45,8 @@ class AuthController extends GetxController {
         Get.offAll(() => const Login());
         isLoggedIn = false;
       }
-    } on FirebaseAuthException {
-      Get.snackbar('Failure', 'User doesnot exist',
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('Failure', e.message.toString(),
           colorText: Colors.white, backgroundColor: Colors.red);
       Get.offAll(() => const Login());
       isLoggedIn = false;
@@ -110,12 +110,12 @@ class AuthController extends GetxController {
           name: name,
           uid: usrCrd.user!.uid,
           profilePicUrl: profilePicUrl!,
-          mobileNumber: mobileNumber);
+          mobileNumber: '+91$mobileNumber');
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(usrCrd.user!.uid)
+          .doc('+91$mobileNumber')
           .set(userModel.toMap());
-
+      usrCrd.user!.updateDisplayName('+91$mobileNumber');
       Get.snackbar('Account Created Successfully', 'Login to continue',
           backgroundColor: Colors.green, colorText: Colors.white);
     } on FirebaseAuthException catch (e) {
