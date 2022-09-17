@@ -1,10 +1,10 @@
 import 'package:custom_messenger/chat/views/chat_view.dart';
 import 'package:custom_messenger/contact/views/contact_view.dart';
-import 'package:custom_messenger/home/controller/all_chats_controller.dart';
+import 'package:custom_messenger/home/controller/all_chat_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AllChats extends StatelessWidget {
+class AllChats extends GetView<AllChatController> {
   const AllChats({Key? key}) : super(key: key);
 
   @override
@@ -19,28 +19,30 @@ class AllChats extends StatelessWidget {
         },
         child: const Icon(Icons.message),
       ),
-      body: GetBuilder<AllChatController>(builder: (context) {
-        return SizedBox(
-            height: height,
-            width: width,
-            child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    // onTap: () => Get.to(() =>  ChatView()),
-                    leading: const CircleAvatar(
-                      radius: 30,
-                    ),
-                    title: const Text('Yuvraj Grover'),
-                    subtitle: const Text(
-                      'Last message sent by Yuvraj Grover Last message sent by Yuvraj Grover',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: const Text('9/3/22'),
-                  );
-                }));
-      }),
+      body: SizedBox(
+        height: height,
+        width: width,
+        child: controller.obx(
+          (state) => ListView.builder(
+            itemCount: state?.length ?? 0,
+            itemBuilder: (BuildContext context, int index) {
+              return const ListTile(
+                // onTap: () => Get.to(() =>  ChatView()),
+                leading: CircleAvatar(
+                  radius: 30,
+                ),
+                title: Text('Yuvraj Grover'),
+                subtitle: Text(
+                  'Last message sent by Yuvraj Grover Last message sent by Yuvraj Grover',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Text('9/3/22'),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

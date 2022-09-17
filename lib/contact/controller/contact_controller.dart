@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_messenger/auth/models/user_model.dart';
+import 'package:custom_messenger/home/controller/all_chat_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive/hive.dart';
@@ -67,7 +68,35 @@ class ContactController extends GetxController {
       await box.put('contacts', matchedContacts);
     }
 
+    // for (var contact in contacts!) {
+    //   if (contact.phones.isNotEmpty &&
+    //       contact.phones[0].normalizedNumber.isNotEmpty) {
+    //     final matchedContact = await FirebaseFirestore.instance
+    //         .collection('users')
+    //         .doc(contact.phones[0].normalizedNumber)
+    //         .get();
+    //     if (matchedContact.exists) {
+    //       matchedContacts?.add(UserModel.fromMap(matchedContact.data()!));
+    //     }
+    //   }
+    //   update();
+    //   if (matchedContacts!.isNotEmpty) {
+    //     var box = await Hive.openBox('matchedContacts');
+    //     await box.put('contacts', matchedContacts);
+    //   }
+    // }
+    matchedContacts = [
+      // TODO: remove
+      UserModel(
+          name: "name",
+          email: "email",
+          profilePicUrl: "profilePicUrl",
+          uid: "uid",
+          mobileNumber: "+918557043313")
+    ];
     isLoading = false;
     update();
+    // TODO: remove
+    Get.put(AllChatController());
   }
 }

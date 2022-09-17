@@ -49,19 +49,24 @@ class SignUpController extends GetxController {
 
   Future signUp() async {
     if (signUpKey.currentState!.validate()) {
-      submitLoading = true;
-      update();
-      Future.delayed(const Duration(seconds: 5), () {
-        submitLoading = false;
+      if (bytes != null) {
+        submitLoading = true;
         update();
-      });
-      await authController.emailSignUp(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-          name: nameController.text.trim(),
-          mobileNumber: mobileController.text.trim(),
-          bytes: bytes!);
-      update();
+        Future.delayed(const Duration(seconds: 5), () {
+          submitLoading = false;
+          update();
+        });
+        await authController.emailSignUp(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+            name: nameController.text.trim(),
+            mobileNumber: mobileController.text.trim(),
+            bytes: bytes!);
+        update();
+      } else {
+        Get.snackbar("", 'please select image');
+        return;
+      }
     } else {
       return;
     }

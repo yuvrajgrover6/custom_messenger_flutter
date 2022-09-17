@@ -19,7 +19,7 @@ class AuthController extends GetxController {
   @override
   void onReady() {
     _currentUser.bindStream(FirebaseAuth.instance.userChanges());
-    ever(_currentUser, setInitialScreen);
+    final a = ever(_currentUser, setInitialScreen);
     super.onReady();
   }
 
@@ -103,6 +103,7 @@ class AuthController extends GetxController {
     try {
       UserCredential usrCrd = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+
       await uploadImageDb(bytes: bytes);
       update();
       UserModel userModel = UserModel(
