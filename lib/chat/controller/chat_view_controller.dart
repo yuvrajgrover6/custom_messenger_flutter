@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:advance_image_picker/advance_image_picker.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custom_messenger/auth/controller/auth_controller.dart';
+import 'package:custom_messenger/auth/models/user_model.dart';
+import 'package:custom_messenger/chat/model/msg_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,7 +14,8 @@ class ChatViewController extends GetxController {
   TextEditingController msgController = TextEditingController();
   List imageFiles = [];
   Uint8List? bytes;
-
+  List bothNumbers = [];
+  final AuthController authController = Get.find();
   @override
   void onInit() {
     final configs = ImagePickerConfigs();
@@ -69,5 +72,53 @@ class ChatViewController extends GetxController {
       update();
     }
     return bytes;
+  }
+
+  sendMsg(UserModel user) async {
+    final MsgModel msgModel = MsgModel(
+        msg: msgController.text,
+        sender: authController.myUser.value!.mobileNumber,
+        receiver: user.mobileNumber,
+        time: DateTime.now(),
+        type: "msg",
+        isRead: false);
+    List list = [msgModel.sender, msgModel.receiver];
+    list.sort((a, b) => a.compareTo(b));
+    bothNumbers = list;
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(bothNumbers[0] + bothNumbers[1])
+          .collection('chats')
+          .add(msgModel.toMap())
+          .then((value) {
+        msgController.clear();
+        Get.snackbar('Success', 'messgae sent');
+      });
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
+  }
+
+  Future getMessages(UserModel user) async {
+    List list = [authController.myUser.value!.mobileNumber, user.mobileNumber];
+    list.sort((a, b) => a.compareTo(b));
+    bothNumbers = list;
+    List<MsgModel> listOfMsgs = [];
+    try {
+      await FirebaseFirestore.instance
+          .collection('chatRooms')
+          .doc(bothNumbers[0] + bothNumbers[1])
+          .collection('chats')
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          listOfMsgs.add(MsgModel.fromMap(element.data()));
+        });
+      });
+      return listOfMsgs;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 }

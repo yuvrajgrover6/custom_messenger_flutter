@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(AuthController());
     return DefaultTabController(
-      initialIndex: 2,
+      initialIndex: 0,
       length: 3,
       child: Scaffold(
         appBar: AppBar(

@@ -54,127 +54,142 @@ class ChatView extends StatelessWidget {
         ],
       ),
       body: GetBuilder<ChatViewController>(builder: (controller) {
-        return Column(
-          children: [
-            Expanded(
-              flex: 7,
-              child: Container(child: Container(width: width)),
-            ),
-            SizedBox(
-                height: height * 0.1,
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: width * 0.01, vertical: height * 0.015),
-                      width: width * 0.87,
-                      child: Container(
-                        height: height,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                                alignment: Alignment.center,
-                                height: height,
-                                width: width * 0.1,
-                                child: GestureDetector(
-                                  onTap: () => controller.pickImage(context),
-                                  child: const Icon(
-                                    Icons.attach_file,
-                                    color: Colors.grey,
+        return FutureBuilder(
+            future: controller.getMessages(user),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              final msgs = snapshot.data;
+              print(msgs[0].msg);
+              return Column(
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: Container(child: Container(width: width)),
+                  ),
+                  SizedBox(
+                      height: height * 0.1,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.01,
+                                vertical: height * 0.015),
+                            width: width * 0.87,
+                            child: Container(
+                              height: height,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20)),
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      alignment: Alignment.center,
+                                      height: height,
+                                      width: width * 0.1,
+                                      child: GestureDetector(
+                                        onTap: () =>
+                                            controller.pickImage(context),
+                                        child: const Icon(
+                                          Icons.attach_file,
+                                          color: Colors.grey,
+                                        ),
+                                      )),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding:
+                                        EdgeInsets.only(bottom: height * 0.008),
+                                    width: width * 0.6,
+                                    child: TextFormField(
+                                        focusNode: controller.focusNode,
+                                        controller: controller.msgController,
+                                        style:
+                                            TextStyle(fontSize: height * 0.022),
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                        )),
                                   ),
-                                )),
-                            Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.only(bottom: height * 0.008),
-                              width: width * 0.6,
-                              child: TextFormField(
-                                  focusNode: controller.focusNode,
-                                  controller: controller.msgController,
-                                  style: TextStyle(fontSize: height * 0.022),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                  )),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                controller.isEmojiVisible.value =
-                                    !controller.isEmojiVisible.value;
-                                controller.focusNode.unfocus();
+                                  GestureDetector(
+                                    onTap: () {
+                                      controller.isEmojiVisible.value =
+                                          !controller.isEmojiVisible.value;
+                                      controller.focusNode.unfocus();
 
-                                // controller.focusNode.canRequestFocus = true;
-                              },
-                              child: Container(
-                                  alignment: Alignment.center,
-                                  height: height,
-                                  width: width * 0.1,
-                                  child: const Icon(
-                                    Icons.emoji_emotions,
-                                    color: Colors.grey,
-                                  )),
+                                      controller.focusNode.canRequestFocus =
+                                          true;
+                                    },
+                                    child: Container(
+                                        alignment: Alignment.center,
+                                        height: height,
+                                        width: width * 0.1,
+                                        child: const Icon(
+                                          Icons.emoji_emotions,
+                                          color: Colors.grey,
+                                        )),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(width: width * 0.01),
+                          CircleAvatar(
+                              child: IconButton(
+                                  onPressed: () {
+                                    controller.sendMsg(user);
+                                  },
+                                  icon: Icon(Icons.send)))
+                        ],
+                      )),
+                  Obx(
+                    () => Offstage(
+                      offstage: !controller.isEmojiVisible.value,
+                      child: SizedBox(
+                        height: 250,
+                        child: EmojiPicker(
+                            textEditingController: controller.msgController,
+                            onEmojiSelected: (Category category, Emoji emoji) {
+                              controller.msgController.text =
+                                  controller.msgController.text + emoji.emoji;
+                            },
+                            onBackspacePressed: () {
+                              (controller.msgController.text.length - 1);
+                            },
+                            config: Config(
+                                columns: 7,
+                                emojiSizeMax:
+                                    32 * (Platform.isIOS ? 1.30 : 1.0),
+                                verticalSpacing: 0,
+                                horizontalSpacing: 0,
+                                gridPadding: EdgeInsets.zero,
+                                initCategory: Category.RECENT,
+                                bgColor: const Color(0xFFF2F2F2),
+                                indicatorColor: Colors.blue,
+                                iconColor: Colors.grey,
+                                iconColorSelected: Colors.blue,
+                                progressIndicatorColor: Colors.blue,
+                                backspaceColor: Colors.blue,
+                                skinToneDialogBgColor: Colors.white,
+                                skinToneIndicatorColor: Colors.grey,
+                                enableSkinTones: true,
+                                showRecentsTab: true,
+                                recentsLimit: 28,
+                                replaceEmojiOnLimitExceed: false,
+                                noRecents: const Text(
+                                  'No Recents',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black26),
+                                  textAlign: TextAlign.center,
+                                ),
+                                tabIndicatorAnimDuration: kTabScrollDuration,
+                                categoryIcons: const CategoryIcons(),
+                                buttonMode: ButtonMode.MATERIAL)),
                       ),
                     ),
-                    SizedBox(width: width * 0.01),
-                    CircleAvatar(
-                        child: IconButton(
-                            onPressed: () {}, icon: Icon(Icons.send)))
-                  ],
-                )),
-            Obx(
-              () => Offstage(
-                offstage: !controller.isEmojiVisible.value,
-                child: SizedBox(
-                  height: 250,
-                  child: EmojiPicker(
-                      textEditingController: controller.msgController,
-                      onEmojiSelected: (Category category, Emoji emoji) {
-                        controller.msgController.text =
-                            controller.msgController.text + emoji.emoji;
-                      },
-                      onBackspacePressed: () {
-                        (controller.msgController.text.length - 1);
-                      },
-                      config: Config(
-                          columns: 7,
-                          emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                          verticalSpacing: 0,
-                          horizontalSpacing: 0,
-                          gridPadding: EdgeInsets.zero,
-                          initCategory: Category.RECENT,
-                          bgColor: const Color(0xFFF2F2F2),
-                          indicatorColor: Colors.blue,
-                          iconColor: Colors.grey,
-                          iconColorSelected: Colors.blue,
-                          progressIndicatorColor: Colors.blue,
-                          backspaceColor: Colors.blue,
-                          skinToneDialogBgColor: Colors.white,
-                          skinToneIndicatorColor: Colors.grey,
-                          enableSkinTones: true,
-                          showRecentsTab: true,
-                          recentsLimit: 28,
-                          replaceEmojiOnLimitExceed: false,
-                          noRecents: const Text(
-                            'No Recents',
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.black26),
-                            textAlign: TextAlign.center,
-                          ),
-                          tabIndicatorAnimDuration: kTabScrollDuration,
-                          categoryIcons: const CategoryIcons(),
-                          buttonMode: ButtonMode.MATERIAL)),
-                ),
-              ),
-            ),
-          ],
-        );
+                  ),
+                ],
+              );
+            });
       }),
     );
   }

@@ -35,7 +35,7 @@ class UserModel extends HiveObject {
     return UserModel(
         name: map['name'],
         email: map['email'],
-        profilePicUrl: map['profilePicUrl'],
+        profilePicUrl: map['profilePicUrl'] ?? '',
         uid: map['uid'],
         mobileNumber: map['mobileNumber']);
   }
