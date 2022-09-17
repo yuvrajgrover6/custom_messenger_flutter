@@ -1,4 +1,5 @@
 import 'package:custom_messenger/chat/views/chat_view.dart';
+import 'package:custom_messenger/contact/views/contact_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,7 +12,9 @@ class AllChats extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Get.to(() => ContactView());
+        },
         child: const Icon(Icons.message),
       ),
       body: SizedBox(
@@ -21,7 +24,7 @@ class AllChats extends StatelessWidget {
               itemCount: 10,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  onTap: () => Get.to(() => const ChatView()),
+                  // onTap: () => Get.to(() =>  ChatView()),
                   leading: const CircleAvatar(
                     radius: 30,
                   ),
