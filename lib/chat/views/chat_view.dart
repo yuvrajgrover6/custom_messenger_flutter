@@ -62,7 +62,7 @@ class ChatView extends GetView<ChatViewController> {
                     itemCount: state?.length ?? 0,
                     itemBuilder: ((context, index) {
                       if (state?.isEmpty ?? true) {
-                        Center(
+                        const Center(
                             child: Text(
                           "Chat is empty",
                           style: TextStyle(fontSize: 24),

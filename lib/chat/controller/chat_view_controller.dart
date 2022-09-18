@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChatViewController extends GetxController
-    with StateMixin<List<ChatMessage>> {
+    with StateMixin<Set<ChatMessage>> {
   Rx<bool> isEmojiVisible = true.obs;
   FocusNode focusNode = FocusNode();
   TextEditingController msgController = TextEditingController();
@@ -113,7 +113,7 @@ class ChatViewController extends GetxController
   late List<ChatMessage> chatmessages; // TODO: dlete this do with state mixin
   DocumentSnapshot? lastLoadedDoc;
 
-  Future<List<ChatMessage>> getChatsWith() async {
+  Future<Set<ChatMessage>> getChatsWith() async {
     final List<QueryDocumentSnapshot<Map<String, dynamic>>> result;
     if (lastLoadedDoc != null) {
       result = (await FirebaseFirestore.instance
@@ -140,6 +140,6 @@ class ChatViewController extends GetxController
     }
     return result
         .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
-        .toList();
+        .toSet();
   }
 }
