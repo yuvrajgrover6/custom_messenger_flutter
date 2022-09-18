@@ -14,7 +14,11 @@ class ChatMessage {
   final Timestamp time;
   final Status status;
 
-  ChatMessage(this.msg, this.type, this.time, this.status);
+  ChatMessage(
+      {required this.msg,
+      required this.type,
+      required this.time,
+      required this.status});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -26,9 +30,13 @@ class ChatMessage {
   }
 
   factory ChatMessage.fromMap(Map<String, dynamic> map) {
-    return ChatMessage(map['msg'] as String, map['type'] as String, map['time'],
-        Status.values.byName(map['status']));
+    return ChatMessage(
+        msg: map['msg'] as String,
+        type: map['type'] as String,
+        time: map['time'],
+        status: Status.values.byName(map['status']));
   }
+
 
   String toJson() => json.encode(toMap());
 

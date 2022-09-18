@@ -84,24 +84,22 @@ class ChatViewController extends GetxController
   }
 
   sendMsg(UserModel user) async {
-    final MsgModel msgModel = MsgModel(
+    final ChatMessage msgModel = ChatMessage(
         msg: msgController.text,
-        sender: authController.myUser.value!.mobileNumber,
-        receiver: user.mobileNumber,
-        time: DateTime.now(),
+        time: Timestamp.fromDate(DateTime.now()),
         type: "msg",
-        isRead: false);
-    List list = [msgModel.sender, msgModel.receiver];
-    list.sort((a, b) => a.compareTo(b));
-    bothNumbers = list;
+        status: Status.unread);
     try {
       await FirebaseFirestore.instance
-          .collection('chatRooms')
-          .doc(bothNumbers[0] + bothNumbers[1])
+          .collection('users')
+          .doc(authController.myUser.value!.mobileNumber)
           .collection('chats')
+          .doc(chats.chat.reciever)
+          .collection('messages')
           .add(msgModel.toMap())
-          .then((value) {
+          .then((doc) {
         msgController.clear();
+        change(value?..add(msgModel), status: RxStatus.success());
         Get.snackbar('Success', 'messgae sent');
       });
     } catch (e) {
