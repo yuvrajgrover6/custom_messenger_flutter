@@ -37,9 +37,22 @@ class ChatMessage {
         status: Status.values.byName(map['status']));
   }
 
-
   String toJson() => json.encode(toMap());
 
   factory ChatMessage.fromJson(String source) =>
       ChatMessage.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode =>
+      msg.hashCode ^ type.hashCode ^ time.hashCode ^ status.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! ChatMessage) return false;
+    return msg == other.msg &&
+        type == other.type &&
+        time == other.time &&
+        status == other.status;
+  }
 }
