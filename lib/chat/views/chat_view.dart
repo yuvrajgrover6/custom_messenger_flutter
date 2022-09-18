@@ -68,7 +68,7 @@ class ChatView extends GetView<ChatViewController> {
                           style: TextStyle(fontSize: 24),
                         ));
                       }
-                      final msg = state![index];
+                      final msg = state!.elementAt(index);
                       return Container(
                         child: Text(
                           msg.msg,
