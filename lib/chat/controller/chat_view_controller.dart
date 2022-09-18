@@ -5,10 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/auth/models/user_model.dart';
 import 'package:custom_messenger/chat/model/msg_model.dart';
+import 'package:custom_messenger/contact/controller/contact_controller.dart';
+import 'package:custom_messenger/home/model/chat.dart';
+import 'package:custom_messenger/home/model/chat_message.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChatViewController extends GetxController {
+class ChatViewController extends GetxController
+    with StateMixin<List<ChatMessage>> {
   Rx<bool> isEmojiVisible = true.obs;
   FocusNode focusNode = FocusNode();
   TextEditingController msgController = TextEditingController();
@@ -16,8 +20,13 @@ class ChatViewController extends GetxController {
   Uint8List? bytes;
   List bothNumbers = [];
   final AuthController authController = Get.find();
+
+  ChatViewController(this.chats);
   @override
-  void onInit() {
+  void onInit() async {
+    change(await getChatsWith(), status: RxStatus.success());
+    super.onInit();
+
     final configs = ImagePickerConfigs();
     // AppBar text color
     configs.appBarTextColor = Colors.white;
@@ -100,25 +109,39 @@ class ChatViewController extends GetxController {
     }
   }
 
-  Future getMessages(UserModel user) async {
-    List list = [authController.myUser.value!.mobileNumber, user.mobileNumber];
-    list.sort((a, b) => a.compareTo(b));
-    bothNumbers = list;
-    List<MsgModel> listOfMsgs = [];
-    try {
-      await FirebaseFirestore.instance
-          .collection('chatRooms')
-          .doc(bothNumbers[0] + bothNumbers[1])
-          .collection('chats')
-          .get()
-          .then((value) {
-        value.docs.forEach((element) {
-          listOfMsgs.add(MsgModel.fromMap(element.data()));
-        });
-      });
-      return listOfMsgs;
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
+  ContactController contactController = Get.find();
+
+  final UserModelPlusChat chats;
+  late List<ChatMessage> chatmessages; // TODO: dlete this do with state mixin
+  DocumentSnapshot? lastLoadedDoc;
+
+  Future<List<ChatMessage>> getChatsWith() async {
+    final List<QueryDocumentSnapshot<Map<String, dynamic>>> result;
+    if (lastLoadedDoc != null) {
+      result = (await FirebaseFirestore.instance
+              .collection('users')
+              .doc(authController.myUser.value!.mobileNumber)
+              .collection('chats')
+              .doc(chats.chat.reciever)
+              .collection('messages')
+              .startAfterDocument(lastLoadedDoc!)
+              .limit(50)
+              .get())
+          .docs;
+      lastLoadedDoc = result.last;
+    } else {
+      result = (await FirebaseFirestore.instance
+              .collection('users')
+              .doc(authController.myUser.value!.mobileNumber)
+              .collection('chats')
+              .doc(chats.chat.reciever)
+              .collection('messages')
+              .limit(50)
+              .get())
+          .docs;
     }
+    return result
+        .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
+        .toList();
   }
 }

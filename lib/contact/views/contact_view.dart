@@ -52,7 +52,8 @@ class ContactView extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       final user = controller.matchedContacts![index];
                       return ListTile(
-                        onTap: () => Get.to(() => ChatView(user: user)),
+                        // TODO: pass binding ChatRoomController
+                        // onTap: () => Get.to(() => ChatView()),
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(user.profilePicUrl),

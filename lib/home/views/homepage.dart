@@ -1,6 +1,6 @@
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/call/view/all_calls.dart';
-import 'package:custom_messenger/home/views/all_chats.dart';
+import 'package:custom_messenger/home/views/all_chats_screen.dart';
 import 'package:custom_messenger/status/views/all_status.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: const TabBarView(children: [AllChats(), AllStatus(), AllCalls()]),
+        body: const TabBarView(children: [AllChatsScreen(), AllStatus(), AllCalls()]),
       ),
     );
   }

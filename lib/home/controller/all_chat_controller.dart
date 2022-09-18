@@ -6,7 +6,8 @@ import 'package:custom_messenger/home/model/chat.dart';
 import 'package:flutter_contacts/contact.dart';
 import 'package:get/get.dart';
 
-class AllChatController extends GetxController with StateMixin<List<Chat>> {
+class AllChatController extends GetxController
+    with StateMixin<List<UserModelPlusChat>> {
   ContactController contactController = Get.find();
   AuthController authController = Get.find();
 
@@ -19,24 +20,22 @@ class AllChatController extends GetxController with StateMixin<List<Chat>> {
     super.onInit();
   }
 
-  Future<List<Chat>> getChatsWith(List<UserModel>? matchedContacts) async {
-    if (matchedContacts != null) {
-      return await Future.wait(matchedContacts.map((e) async {
-        final sortednums = ([
-          authController.myUser.value!.mobileNumber,
-          e.mobileNumber
-        ]..sort(((a, b) {
-            return a.compareTo(b);
-          })));
-        final path = sortednums.fold(
-            "", (String previousValue, element) => previousValue + element);
-        return Chat.fromMap((await FirebaseFirestore.instance
-            .collection('chatRooms')
-            .doc(path)
-            .get()) as Map<String, dynamic>);
-      }));
-    } else {
-      return [];
-    }
+  Future<List<UserModelPlusChat>> getChatsWith(
+      List<UserModel>? matchedContacts) async {
+    return await Future.wait((await FirebaseFirestore.instance
+            .collection('users')
+            .doc(authController.myUser.value!.mobileNumber)
+            .collection('chats')
+            .get())
+        .docs
+        .map((chatdoc) => Chat.fromMap(chatdoc.data()))
+        .toList()
+        .map((chat) async => UserModelPlusChat(
+            UserModel.fromMap((await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(authController.myUser.value!.mobileNumber)
+                    .get())
+                .data() as Map<String, dynamic>),
+            chat)));
   }
 }
