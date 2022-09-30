@@ -87,12 +87,12 @@ class ContactController extends GetxController {
     // }
     matchedContacts = [
       // TODO: remove
-      UserModel(
-          name: "name",
-          email: "email",
-          profilePicUrl: "profilePicUrl",
-          uid: "uid",
-          mobileNumber: "+918557043313")
+      // UserModel(
+      //     name: "name",
+      //     email: "email",
+      //     profilePicUrl: "profilePicUrl",
+      //     uid: "uid",
+      //     mobileNumber: "+918557043313")
     ];
     isLoading = false;
     update();

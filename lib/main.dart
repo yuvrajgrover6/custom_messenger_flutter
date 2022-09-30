@@ -16,9 +16,7 @@ void main() async {
   runApp(const MyApp());
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
-  final controller = Get.put(ContactController());
-  await controller.getContacts();
-  await controller.getLocalContacts();
+
 }
 
 class MyApp extends StatelessWidget {

@@ -1,3 +1,4 @@
+import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
 import 'package:custom_messenger/chat/views/chat_view.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:flutter/material.dart';
@@ -52,8 +53,9 @@ class ContactView extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       final user = controller.matchedContacts![index];
                       return ListTile(
-                        // TODO: pass binding ChatRoomController
-                        // onTap: () => Get.to(() => ChatView()),
+                        // onTap: () => Get.to(() => ChatView(),
+                        //     binding: BindingsBuilder(() =>
+                        //         Get.lazyPut(() => ChatViewController(null)))),
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(user.profilePicUrl),

@@ -1,5 +1,6 @@
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/call/view/all_calls.dart';
+import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/home/views/all_chats_screen.dart';
 import 'package:custom_messenger/status/views/all_status.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AuthController());
+    Get.find<ContactController>();
     return DefaultTabController(
       initialIndex: 0,
       length: 3,
@@ -39,7 +41,8 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: const TabBarView(children: [AllChatsScreen(), AllStatus(), AllCalls()]),
+        body: const TabBarView(
+            children: [AllChatsScreen(), AllStatus(), AllCalls()]),
       ),
     );
   }

@@ -9,6 +9,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../contact/controller/contact_controller.dart';
+
 class AuthController extends GetxController {
   final Rx<User?> _currentUser = FirebaseAuth.instance.currentUser.obs;
   User? get currentUser => _currentUser.value;
@@ -34,6 +36,9 @@ class AuthController extends GetxController {
           if (userSnap.exists) {
             myUser.value =
                 UserModel.fromMap(userSnap.data() as Map<String, dynamic>);
+            final controller = Get.put(ContactController());
+            await controller.getContacts();
+            await controller.getLocalContacts();
             Get.off(() => const HomePage());
           } else {
             Get.snackbar('Failure', 'User Data doesnot exist',
