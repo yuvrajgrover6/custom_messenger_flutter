@@ -4,7 +4,6 @@ import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/auth/models/user_model.dart';
-import 'package:custom_messenger/chat/model/msg_model.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/home/model/chat.dart';
 import 'package:custom_messenger/home/model/chat_message.dart';
@@ -25,6 +24,7 @@ class ChatViewController extends GetxController
   @override
   void onInit() async {
     change(await getChatsWith(), status: RxStatus.success());
+    await setStatusRead();
     super.onInit();
 
     final configs = ImagePickerConfigs();
@@ -88,7 +88,8 @@ class ChatViewController extends GetxController
         msg: msgController.text,
         time: Timestamp.fromDate(DateTime.now()),
         type: "msg",
-        status: Status.unread);
+        status: Status.unread,
+        sender: user.mobileNumber);
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -100,8 +101,27 @@ class ChatViewController extends GetxController
           .then((doc) {
         msgController.clear();
         change(value?..add(msgModel), status: RxStatus.success());
-        Get.snackbar('Success', 'messgae sent');
       });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(chats.chat.reciever)
+          .collection('chats')
+          .doc(authController.myUser.value!.mobileNumber)
+          .collection('messages')
+          .add(msgModel.toMap());
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(authController.myUser.value!.mobileNumber)
+          .collection('chats')
+          .doc(chats.chat.reciever)
+          .set(Chat(chats.chat.reciever, msgModel.msg, msgModel.time).toMap());
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(chats.chat.reciever)
+          .collection('chats')
+          .doc(authController.myUser.value!.mobileNumber)
+          .set(Chat(chats.chat.reciever, msgModel.msg, msgModel.time).toMap());
+    
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -110,9 +130,7 @@ class ChatViewController extends GetxController
   ContactController contactController = Get.find();
 
   final UserModelPlusChat chats;
-  late List<ChatMessage> chatmessages; // TODO: dlete this do with state mixin
   DocumentSnapshot? lastLoadedDoc;
-
   Future<Set<ChatMessage>> getChatsWith() async {
     final List<QueryDocumentSnapshot<Map<String, dynamic>>> result;
     if (lastLoadedDoc != null) {
@@ -122,6 +140,7 @@ class ChatViewController extends GetxController
               .collection('chats')
               .doc(chats.chat.reciever)
               .collection('messages')
+              .orderBy('time')
               .startAfterDocument(lastLoadedDoc!)
               .limit(50)
               .get())
@@ -134,6 +153,7 @@ class ChatViewController extends GetxController
               .collection('chats')
               .doc(chats.chat.reciever)
               .collection('messages')
+              .orderBy('time')
               .limit(50)
               .get())
           .docs;
@@ -141,5 +161,37 @@ class ChatViewController extends GetxController
     return result
         .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
         .toSet();
+  }
+
+  String getTime(Timestamp timestamp) {
+    if (timestamp.toDate().minute < 10) {
+      return '${timestamp.toDate().hour}:0${timestamp.toDate().minute}';
+    } else {
+      return '${timestamp.toDate().hour}:${timestamp.toDate().minute}';
+    }
+  }
+
+  Future<void> setStatusRead() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.myUser.value!.mobileNumber)
+        .collection('chats')
+        .doc(chats.chat.reciever)
+        .collection('messages')
+        .where('sender',
+            isNotEqualTo: authController.myUser.value!.mobileNumber)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(authController.myUser.value!.mobileNumber)
+            .collection('chats')
+            .doc(chats.chat.reciever)
+            .collection('messages')
+            .doc(element.id)
+            .update({'status': 'read'});
+      }
+    });
   }
 }

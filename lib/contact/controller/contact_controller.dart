@@ -1,15 +1,26 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/auth/models/user_model.dart';
+import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
+import 'package:custom_messenger/chat/views/chat_view.dart';
 import 'package:custom_messenger/home/controller/all_chat_controller.dart';
+import 'package:custom_messenger/home/model/chat.dart';
 import 'package:get/get.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive/hive.dart';
+
+import '../../home/model/chat_message.dart';
 
 class ContactController extends GetxController {
   List<Contact>? contacts = [];
   List<UserModel>? matchedContacts = [];
   bool isLoading = false;
+  final AuthController authController = Get.find();
   List<UserModel>? users = [];
+  Rx<List<UserModel>>? nonMatchedContacts = Rx([]);
+
   @override
   onInit() async {
     super.onInit();
@@ -47,7 +58,6 @@ class ContactController extends GetxController {
     var box = await Hive.openBox('matchedContacts');
     await box.delete('contacts');
     await box.clear();
-    print(await box.get('contacts'));
     isLoading = true;
     update();
     await getMarker();
@@ -57,7 +67,6 @@ class ContactController extends GetxController {
             contact.phones[0].normalizedNumber.isNotEmpty) {
           if (contact.phones[0].normalizedNumber == user.mobileNumber) {
             matchedContacts!.add(user);
-            print(matchedContacts![0].name);
           }
         }
       }
@@ -67,36 +76,69 @@ class ContactController extends GetxController {
       var box = await Hive.openBox('matchedContacts');
       await box.put('contacts', matchedContacts);
     }
-
-    // for (var contact in contacts!) {
-    //   if (contact.phones.isNotEmpty &&
-    //       contact.phones[0].normalizedNumber.isNotEmpty) {
-    //     final matchedContact = await FirebaseFirestore.instance
-    //         .collection('users')
-    //         .doc(contact.phones[0].normalizedNumber)
-    //         .get();
-    //     if (matchedContact.exists) {
-    //       matchedContacts?.add(UserModel.fromMap(matchedContact.data()!));
-    //     }
-    //   }
-    //   update();
-    //   if (matchedContacts!.isNotEmpty) {
-    //     var box = await Hive.openBox('matchedContacts');
-    //     await box.put('contacts', matchedContacts);
-    //   }
-    // }
-    matchedContacts = [
-      // TODO: remove
-      // UserModel(
-      //     name: "name",
-      //     email: "email",
-      //     profilePicUrl: "profilePicUrl",
-      //     uid: "uid",
-      //     mobileNumber: "+918557043313")
-    ];
     isLoading = false;
     update();
-    // TODO: remove
-    Get.put(AllChatController());
+  }
+
+  Future<void> checkforNonChatedNumbers() async {
+    isLoading = true;
+    nonMatchedContacts!.value.clear();
+    DocumentSnapshot? result;
+    for (var contact in matchedContacts!) {
+      result = (await FirebaseFirestore.instance
+          .collection('users')
+          .doc(authController.myUser.value!.mobileNumber)
+          .collection('chats')
+          .doc(contact.mobileNumber.toString())
+          .get());
+    }
+    if (result == null) {
+      nonMatchedContacts!.value = matchedContacts!;
+    }
+    if (result != null) {
+      if (result.data() != null) {
+        nonMatchedContacts!.value = matchedContacts!
+            .where((element) => element.mobileNumber != result!.id)
+            .toList();
+        isLoading = false;
+        update();
+      } else {
+        nonMatchedContacts!.value = matchedContacts!;
+        isLoading = false;
+        update();
+      }
+    }
+  }
+
+  void onPress(UserModel user) async {
+    final UserModelPlusChat demoMessage = UserModelPlusChat(
+        user, Chat(user.mobileNumber, 'Hello', Timestamp.now()));
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.myUser.value!.mobileNumber)
+        .collection('chats')
+        .doc(user.mobileNumber)
+        .set(demoMessage.chat.toMap());
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.mobileNumber)
+        .collection('chats')
+        .doc(authController.myUser.value!.mobileNumber)
+        .set(demoMessage.chat.toMap());
+
+    final chates = await Future.wait((await FirebaseFirestore.instance
+            .collection('users')
+            .doc(authController.myUser.value!.mobileNumber)
+            .collection('chats')
+            .get())
+        .docs
+        .map((chatdoc) => Chat.fromMap(chatdoc.data()))
+        .toList()
+        .map((chat) async =>
+            UserModelPlusChat(authController.myUser.value!, chat)));
+    Get.to(ChatView(), binding: BindingsBuilder(() {
+      Get.lazyPut<ChatViewController>(() => ChatViewController(chates[0]));
+    }));
   }
 }

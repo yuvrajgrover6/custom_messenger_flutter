@@ -1,23 +1,30 @@
 import 'dart:io';
 
+import 'package:bubble/bubble.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
-import 'package:custom_messenger/auth/models/user_model.dart';
 import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import "package:intl/intl.dart";
+
+import '../../home/model/chat_message.dart';
 
 class ChatView extends GetView<ChatViewController> {
-  const ChatView({Key? key}) : super(key: key);
+  ChatView({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
     final authController = Get.find<AuthController>();
     final user = authController.myUser.value!;
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: Material(
           child: Container(
@@ -25,7 +32,7 @@ class ChatView extends GetView<ChatViewController> {
             height: height * 0.03,
             color: Colors.blue,
             child: Text(
-              user.name,
+              controller.chats.user.name.capitalizeFirst!,
               style: TextStyle(fontSize: width * 0.05, color: Colors.white),
             ),
           ),
@@ -41,7 +48,8 @@ class ChatView extends GetView<ChatViewController> {
                 children: [
                   const Icon(Icons.arrow_back),
                   CircleAvatar(
-                      backgroundImage: NetworkImage(user.profilePicUrl)),
+                      backgroundImage:
+                          NetworkImage(controller.chats.user.profilePicUrl)),
                 ],
               )),
         ),
@@ -58,24 +66,80 @@ class ChatView extends GetView<ChatViewController> {
         children: [
           Expanded(
               flex: 7,
-              child: controller.obx((state) => ListView.builder(
-                    itemCount: state?.length ?? 0,
-                    itemBuilder: ((context, index) {
-                      if (state?.isEmpty ?? true) {
-                        const Center(
-                            child: Text(
-                          "Chat is empty",
-                          style: TextStyle(fontSize: 24),
-                        ));
-                      }
-                      final msg = state!.elementAt(index);
-                      return Container(
-                        child: Text(
-                          msg.msg,
-                          style: TextStyle(fontSize: 50),
-                        ),
-                      );
-                    }),
+              child: controller.obx((state) => Container(
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                    child: ListView.builder(
+                      itemCount: state?.length ?? 0,
+                      itemBuilder: ((context, index) {
+                        if (state?.isEmpty ?? true) {
+                          const Center(
+                              child: Text(
+                            "Chat is empty",
+                            style: TextStyle(fontSize: 24),
+                          ));
+                        }
+                        final msg = state!.elementAt(index);
+                        final isMe = msg.sender == user.mobileNumber;
+                        return Container(
+                          margin:
+                              EdgeInsets.symmetric(vertical: height * 0.007),
+                          child: Bubble(
+                            color: isMe
+                                ? primaryColor.withOpacity(0.2)
+                                : Colors.white,
+                            padding: BubbleEdges.only(left: width * 0.04),
+                            alignment:
+                                isMe ? Alignment.topRight : Alignment.topLeft,
+                            nip: isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
+                            child: Container(
+                              constraints: BoxConstraints(
+                                  minWidth: 0, maxWidth: width * 0.6),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    constraints: BoxConstraints(
+                                      minWidth: 0,
+                                      maxWidth: width * 0.48,
+                                    ),
+                                    child: Text(msg.msg,
+                                        style:
+                                            TextStyle(fontSize: width * 0.045)),
+                                  ),
+                                  Container(
+                                    constraints: BoxConstraints(
+                                        minWidth: 0, maxWidth: width * 0.48),
+                                    alignment: Alignment.bottomRight,
+                                    width: width * 0.12,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          '  ${controller.getTime(msg.time)}',
+                                          style: TextStyle(
+                                              fontSize: width * 0.025),
+                                          textAlign: TextAlign.right,
+                                        ),
+                                        (msg.status == Status.unread)
+                                            ? Icon(Icons.check,
+                                                size: width * 0.04)
+                                            : Icon(
+                                                Icons.check_circle,
+                                                size: width * 0.04,
+                                                color: primaryColor,
+                                              ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
                   ))),
           SizedBox(
               height: height * 0.1,
@@ -123,7 +187,6 @@ class ChatView extends GetView<ChatViewController> {
                               controller.isEmojiVisible.value =
                                   !controller.isEmojiVisible.value;
                               controller.focusNode.unfocus();
-
                               controller.focusNode.canRequestFocus = true;
                             },
                             child: Container(

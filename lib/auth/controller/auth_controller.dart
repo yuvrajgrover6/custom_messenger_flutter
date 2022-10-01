@@ -39,6 +39,7 @@ class AuthController extends GetxController {
             final controller = Get.put(ContactController());
             await controller.getContacts();
             await controller.getLocalContacts();
+            await controller.checkforNonChatedNumbers();
             Get.off(() => const HomePage());
           } else {
             Get.snackbar('Failure', 'User Data doesnot exist',

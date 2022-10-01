@@ -13,12 +13,15 @@ class ChatMessage {
   final String type;
   final Timestamp time;
   final Status status;
+  final String sender;
 
-  ChatMessage(
-      {required this.msg,
-      required this.type,
-      required this.time,
-      required this.status});
+  ChatMessage({
+    required this.msg,
+    required this.sender,
+    required this.type,
+    required this.time,
+    required this.status,
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -26,6 +29,7 @@ class ChatMessage {
       'type': type,
       'time': time,
       'status': status.name,
+      'sender': sender,
     };
   }
 
@@ -34,7 +38,8 @@ class ChatMessage {
         msg: map['msg'] as String,
         type: map['type'] as String,
         time: map['time'],
-        status: Status.values.byName(map['status']));
+        status: Status.values.byName(map['status']),
+        sender: map['sender'] as String);
   }
 
   String toJson() => json.encode(toMap());
@@ -53,6 +58,7 @@ class ChatMessage {
     return msg == other.msg &&
         type == other.type &&
         time == other.time &&
+        sender == other.sender &&
         status == other.status;
   }
 }
