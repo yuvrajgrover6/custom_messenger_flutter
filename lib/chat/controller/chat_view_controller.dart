@@ -83,19 +83,22 @@ class ChatViewController extends GetxController
     return bytes;
   }
 
-  sendMsg(UserModel user) async {
+  sendMsg(
+    UserModel user,
+  ) async {
     final ChatMessage msgModel = ChatMessage(
         msg: msgController.text,
         time: Timestamp.fromDate(DateTime.now()),
         type: "msg",
         status: Status.unread,
-        sender: user.mobileNumber);
+        sender: authController.myUser.value!.mobileNumber);
     try {
+      
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(authController.myUser.value!.mobileNumber)
+          .doc(authController.currentUser!.displayName)
           .collection('chats')
-          .doc(chats.chat.reciever)
+          .doc(user.mobileNumber)
           .collection('messages')
           .add(msgModel.toMap())
           .then((doc) {
@@ -104,7 +107,7 @@ class ChatViewController extends GetxController
       });
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(chats.chat.reciever)
+          .doc(user.mobileNumber)
           .collection('chats')
           .doc(authController.myUser.value!.mobileNumber)
           .collection('messages')
@@ -113,15 +116,14 @@ class ChatViewController extends GetxController
           .collection('users')
           .doc(authController.myUser.value!.mobileNumber)
           .collection('chats')
-          .doc(chats.chat.reciever)
-          .set(Chat(chats.chat.reciever, msgModel.msg, msgModel.time).toMap());
+          .doc(user.mobileNumber)
+          .set(Chat(user.mobileNumber, msgModel.msg, msgModel.time).toMap());
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(chats.chat.reciever)
+          .doc(user.mobileNumber)
           .collection('chats')
           .doc(authController.myUser.value!.mobileNumber)
-          .set(Chat(chats.chat.reciever, msgModel.msg, msgModel.time).toMap());
-    
+          .set(Chat(user.mobileNumber, msgModel.msg, msgModel.time).toMap());
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }

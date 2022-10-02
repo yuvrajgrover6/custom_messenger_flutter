@@ -1,13 +1,11 @@
 import 'dart:io';
 
 import 'package:bubble/bubble.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import "package:intl/intl.dart";
 
 import '../../home/model/chat_message.dart';
 
@@ -20,7 +18,6 @@ class ChatView extends GetView<ChatViewController> {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
     final authController = Get.find<AuthController>();
-    final user = authController.myUser.value!;
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -79,7 +76,8 @@ class ChatView extends GetView<ChatViewController> {
                           ));
                         }
                         final msg = state!.elementAt(index);
-                        final isMe = msg.sender == user.mobileNumber;
+                        final isMe = msg.sender ==
+                            authController.myUser.value!.mobileNumber;
                         return Container(
                           margin:
                               EdgeInsets.symmetric(vertical: height * 0.007),
@@ -206,7 +204,7 @@ class ChatView extends GetView<ChatViewController> {
                   CircleAvatar(
                       child: IconButton(
                           onPressed: () {
-                            controller.sendMsg(user);
+                            controller.sendMsg(controller.chats.user);
                           },
                           icon: Icon(Icons.send)))
                 ],
