@@ -49,11 +49,9 @@ class AllChatsScreen extends StatelessWidget {
                   backgroundImage: NetworkImage(
                       controller.usersAndChatsList![index].user.profilePicUrl),
                 ),
-                title: Text(controller.usersList?[index].name ?? ""),
-                subtitle: Text(controller
-                        .usersAndChatsList?[index].chat.lastSend
-                        .toString() ??
-                    ""),
+                title: Text(controller.usersAndChatsList![index].user.name),
+                subtitle: Text(
+                    controller.usersAndChatsList?[index].chat.lastSend ?? ""),
                 trailing: Text(
                   controller.getMessageDate(
                       controller.usersAndChatsList?[index].chat.lastSeenTime ??
