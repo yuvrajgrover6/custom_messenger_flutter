@@ -41,6 +41,7 @@ class ContactController extends GetxController {
     if (await FlutterContacts.requestPermission()) {
       contacts = await FlutterContacts.getContacts(
           withProperties: true, deduplicateProperties: true);
+
       update();
     }
   }
@@ -82,6 +83,7 @@ class ContactController extends GetxController {
 
   Future<void> checkforNonChatedNumbers() async {
     isLoading = true;
+    update();
     nonMatchedContacts!.value.clear();
     DocumentSnapshot? result;
     for (var contact in matchedContacts!) {
@@ -127,18 +129,21 @@ class ContactController extends GetxController {
         .doc(authController.myUser.value!.mobileNumber)
         .set(demoMessage.chat.toMap());
 
-    final chates = await Future.wait((await FirebaseFirestore.instance
-            .collection('users')
-            .doc(authController.myUser.value!.mobileNumber)
-            .collection('chats')
-            .get())
-        .docs
-        .map((chatdoc) => Chat.fromMap(chatdoc.data()))
-        .toList()
-        .map((chat) async =>
-            UserModelPlusChat(authController.myUser.value!, chat)));
+    final chatResult = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.myUser.value!.mobileNumber)
+        .collection('chats')
+        .doc(user.mobileNumber)
+        .get();
+    final chat1 = Chat.fromMap(chatResult.data()!);
+    final resultUser = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.mobileNumber)
+        .get();
+    final user1 = UserModel.fromMap(resultUser.data()!);
     Get.to(ChatView(), binding: BindingsBuilder(() {
-      Get.lazyPut<ChatViewController>(() => ChatViewController(chates[0]));
+      Get.lazyPut<ChatViewController>(
+          () => ChatViewController(UserModelPlusChat(user1, chat1)));
     }));
   }
 }

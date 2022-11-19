@@ -35,20 +35,20 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   get:
-  firebase_core: ^1.21.1
+  firebase_core:
   firebase_auth:
   cloud_firestore:
   firebase_storage:
-  emoji_picker_flutter: ^1.3.1
-  flutter_svg: ^1.1.4
-  uuid: ^3.0.6
-  advance_image_picker: ^0.1.7+1
-  flutter_contacts: ^1.1.5
-  hive: ^2.2.3
-  path_provider: ^2.0.11
+  emoji_picker_flutter:
+  flutter_svg:
+  uuid:
+  advance_image_picker:
+  flutter_contacts:
+  hive: 
+  path_provider:
   lottie:
   hive_flutter:
-  bubble: ^1.2.1
+  bubble:
 dev_dependencies:
   flutter_test:
     sdk: flutter

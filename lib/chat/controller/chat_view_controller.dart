@@ -19,12 +19,14 @@ class ChatViewController extends GetxController
   Uint8List? bytes;
   List bothNumbers = [];
   final AuthController authController = Get.find();
+  final ScrollController controller = ScrollController();
 
   ChatViewController(this.chats);
   @override
   void onInit() async {
     change(await getChatsWith(), status: RxStatus.success());
     await setStatusRead();
+    await controller.position.moveTo(controller.position.maxScrollExtent);
     super.onInit();
 
     final configs = ImagePickerConfigs();
@@ -93,7 +95,6 @@ class ChatViewController extends GetxController
         status: Status.unread,
         sender: authController.myUser.value!.mobileNumber);
     try {
-      
       await FirebaseFirestore.instance
           .collection('users')
           .doc(authController.currentUser!.displayName)
@@ -124,6 +125,7 @@ class ChatViewController extends GetxController
           .collection('chats')
           .doc(authController.myUser.value!.mobileNumber)
           .set(Chat(user.mobileNumber, msgModel.msg, msgModel.time).toMap());
+      await controller.position.moveTo(controller.position.maxScrollExtent);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
