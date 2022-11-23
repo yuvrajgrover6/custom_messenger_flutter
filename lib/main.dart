@@ -8,15 +8,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'auth/controller/auth_controller.dart';
+import 'call/controller/local_db_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
+  await Get.putAsync(() async {
+    final controller = LocalDBController();
+    await controller.intializeLocalDB();
+    return controller;
+  }, permanent: true);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -25,9 +31,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialBinding: BindingsBuilder(() {
-        Get.put(AuthController(), permanent: true);
+      initialBinding: BindingsBuilder(() async {
         Get.put(ThemeController(), permanent: true);
+        Get.put(AuthController(), permanent: true);
       }),
       debugShowCheckedModeBanner: false,
       title: 'Custom Messenger',

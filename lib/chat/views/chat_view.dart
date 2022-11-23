@@ -1,10 +1,12 @@
 import 'package:bubble/bubble.dart';
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
+import 'package:custom_messenger/home/views/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../home/model/chat_message.dart';
+import '../../home/views/all_chats_screen.dart';
 
 class ChatView extends GetView<ChatViewController> {
   ChatView({
@@ -26,6 +28,7 @@ class ChatView extends GetView<ChatViewController> {
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Material(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -40,7 +43,10 @@ class ChatView extends GetView<ChatViewController> {
           titleSpacing: 0,
           leadingWidth: width * 0.19,
           leading: GestureDetector(
-            onTap: () => Get.back(),
+            onTap: () {
+              controller.focusNode.unfocus();
+              Get.offAll(() => const HomePage());
+            },
             child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 7),
                 child: Row(

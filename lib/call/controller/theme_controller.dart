@@ -7,37 +7,51 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'local_db_controller.dart';
+
+enum colors {
+  primaryColor,
+  secondaryColor,
+}
+
 class ThemeController extends GetxController {
-  Future<Box> openHiveBox(String boxName) async {
-    if (!kIsWeb && !Hive.isBoxOpen(boxName)) {
-      Hive.init((await getApplicationDocumentsDirectory()).path);
-    }
+  static Map defaultSettings = {
+    colors.primaryColor: Colors.blue,
+    colors.secondaryColor: Colors.white,
+  };
+  final Map<colors, Rx<Object>> settings =
+      defaultSettings.map((key, value) => MapEntry(key, Rx(value)));
+  Color get primaryColor => settings[colors.primaryColor]!.value as Color;
+  Box get colorsLocalDB => LocalDBController.instance.colorsLocalDB;
+  ThemeController();
 
-    return await Hive.openBox(boxName);
-  }
-
-  int? primaryColor;
-  int? secondaryColor;
   @override
   onInit() async {
-    final box = await openHiveBox('theme');
-    final color1 = await box.get('primaryColor');
-    final color2 = await box.get('secondaryColor');
-    primaryColor = int.parse(color1);
-    secondaryColor = int.parse(color2);
-    update();
-    await box.close();
-    log('primaryColor: ${primaryColor.toString()}');
     super.onInit();
+    initializeSettings();
   }
 
   Rx<int> selectedIndex = 0.obs;
   ThemeData primaryTheme() {
     final theme = ThemeData(
-        primaryColor: Color(primaryColor!),
-        colorScheme: ColorScheme.light(primary: Color(primaryColor!)));
+        primaryColor: Color(primaryColor.value),
+        colorScheme: ColorScheme.light(primary: Color(primaryColor.value)));
     update();
     return theme;
+  }
+
+  initializeColor(colors setting) {
+    final color = colorsLocalDB.get(setting.name);
+    if (color != null) {
+      settings[setting]!.value = Color(color);
+    } else {
+      settings[setting]!.value = defaultSettings[setting];
+    }
+  }
+
+  initializeSettings() {
+    initializeColor(colors.primaryColor);
+    initializeColor(colors.secondaryColor);
   }
 
   final List<ThemeModel> themes = [
@@ -62,15 +76,20 @@ class ThemeController extends GetxController {
         primaryColor: '0xFFCFD8DC',
         secondaryColor: '0xFF000000')
   ];
-  handleOnTap(int index) async {
-    final box = await openHiveBox('theme');
-    await box.deleteAll(['primaryColor', 'secondaryColor']);
-    await box.clear();
-    log(themes[index].primaryColor.toString());
-    await box.put('primaryColor', themes[index].primaryColor);
-    await box.put('secondaryColor', themes[index].secondaryColor);
-    await box.close();
-    log('done');
+  handleOnTap(
+      {required int index,
+      required colors primary,
+      required colors secondary}) async {
     selectedIndex.value = index;
+    settings[primary]!.value = int.parse(themes[index].primaryColor);
+    settings[secondary]!.value = int.parse(themes[index].secondaryColor);
+    await colorsLocalDB.put(primary.name, settings[primary]!.value);
+    await colorsLocalDB.put(secondary.name, settings[secondary]!.value );
+    update();
+  }
+
+  reset() async {
+    await colorsLocalDB.clear();
+    initializeSettings();
   }
 }

@@ -36,7 +36,10 @@ class SettingsScreen extends StatelessWidget {
                     width: width,
                     child: Obx(
                       () => ListTile(
-                        onTap: () => controller.handleOnTap(index),
+                        onTap: () => controller.handleOnTap(
+                            index: index,
+                            primary: colors.primaryColor,
+                            secondary: colors.secondaryColor),
                         selected: controller.selectedIndex.value == index,
                         selectedTileColor: Colors.green,
                         selectedColor: Colors.white,

@@ -17,13 +17,13 @@ class HomePage extends StatelessWidget {
     Get.find<ContactController>();
     return DefaultTabController(
       initialIndex: 0,
-      length: 3,
+      length: 1,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(tabs: [
             Tab(text: 'CHATS'),
-            Tab(text: 'STATUS'),
-            Tab(text: 'CALLS')
+            // Tab(text: 'STATUS'),
+            // Tab(text: 'CALLS')
           ]),
           title: const Text('Messenger'),
           actions: [
@@ -50,7 +50,7 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: TabBarView(children: [AllChatsScreen(), AllStatus(), AllCalls()]),
+        body: TabBarView(children: [AllChatsScreen()]),
       ),
     );
   }
