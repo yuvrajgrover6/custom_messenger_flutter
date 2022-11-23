@@ -49,6 +49,7 @@ dependencies:
   lottie:
   hive_flutter:
   bubble:
+  flutter_ringtone_player: ^3.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -4,6 +4,7 @@ import 'package:custom_messenger/call/controller/theme_controller.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Custom Messenger',
       theme: ThemeData(
+          indicatorColor: Color(int.parse(controller.secondaryColor)),
           appBarTheme: AppBarTheme(
               backgroundColor: Color(int.parse(controller.primaryColor)),
               foregroundColor: Color(int.parse(controller.secondaryColor))),

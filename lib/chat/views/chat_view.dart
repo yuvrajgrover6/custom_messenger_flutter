@@ -36,7 +36,9 @@ class ChatView extends GetView<ChatViewController> {
               color: primaryColor,
               child: Text(
                 controller.chats.user.name.capitalizeFirst!,
-                style: TextStyle(fontSize: width * 0.05, color: Colors.white),
+                style: TextStyle(
+                  fontSize: width * 0.05,
+                ),
               ),
             ),
           ),

@@ -9,6 +9,7 @@ import 'package:custom_messenger/home/model/chat.dart';
 import 'package:custom_messenger/home/model/chat_message.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class ChatViewController extends GetxController
     with StateMixin<List<ChatMessage>> {
@@ -126,7 +127,9 @@ class ChatViewController extends GetxController
           .doc(user.mobileNumber)
           .collection('chats')
           .doc(authController.myUser.value!.mobileNumber)
-          .set(Chat(authController.myUser.value!.mobileNumber, msgModel.msg, msgModel.time).toMap());
+          .set(Chat(authController.myUser.value!.mobileNumber, msgModel.msg,
+                  msgModel.time)
+              .toMap());
       await controller.position.moveTo(controller.position.maxScrollExtent);
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -165,6 +168,10 @@ class ChatViewController extends GetxController
         .snapshots()
         .listen((event) {
       // final listNewDocs = event.docChanges;
+      if (event.docs.last.data()['sender'] !=
+          authController.myUser.value!.mobileNumber) {
+        FlutterRingtonePlayer.playNotification();
+      }
       change(event.docs.map((e) => ChatMessage.fromMap(e.data())).toList(),
           status: RxStatus.success());
 
