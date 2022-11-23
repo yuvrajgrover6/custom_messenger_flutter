@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put<ThemeController>(ThemeController());
     return GetMaterialApp(
       initialBinding: BindingsBuilder(() async {
         Get.put(ThemeController(), permanent: true);
@@ -37,7 +38,44 @@ class MyApp extends StatelessWidget {
       }),
       debugShowCheckedModeBanner: false,
       title: 'Custom Messenger',
-      theme: ThemeController().primaryTheme(),
+      theme: ThemeData(
+          textTheme: TextTheme(
+            headline1:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            headline2:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            headline3:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            headline4:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            headline5:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            headline6:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            subtitle1:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            subtitle2:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            bodyText1:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            bodyText2:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            caption:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            button:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+            overline:
+                TextStyle(color: Color(int.parse(controller.secondaryColor))),
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: Color(int.parse(controller.primaryColor)),
+            foregroundColor: Color(int.parse(controller.secondaryColor)),
+          ),
+          primaryColor: Color(int.parse(controller.primaryColor)),
+          colorScheme: ColorScheme.light(
+            primary: Color(int.parse(controller.primaryColor)),
+            secondary: Color(int.parse(controller.secondaryColor)),
+          )),
       home: const Login(),
     );
   }

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'local_db_controller.dart';
 
@@ -16,26 +15,57 @@ enum colors {
 
 class ThemeController extends GetxController {
   static Map defaultSettings = {
-    colors.primaryColor: Colors.blue,
-    colors.secondaryColor: Colors.white,
+    colors.primaryColor: '0xFF2196F3',
+    colors.secondaryColor: '0xFFFFFFFF',
   };
   final Map<colors, Rx<Object>> settings =
       defaultSettings.map((key, value) => MapEntry(key, Rx(value)));
-  Color get primaryColor => settings[colors.primaryColor]!.value as Color;
+  String get primaryColor => settings[colors.primaryColor]!.value as String;
+  String get secondaryColor => settings[colors.secondaryColor]!.value as String;
   Box get colorsLocalDB => LocalDBController.instance.colorsLocalDB;
   ThemeController();
 
   @override
   onInit() async {
+    // colorsLocalDB.clear();
+    // colorsLocalDB
+    //     .deleteAll([colors.primaryColor.name, colors.secondaryColor.name]);
     super.onInit();
-    initializeSettings();
+    await initializeSettings();
+    getSelectedIndex();
   }
 
   Rx<int> selectedIndex = 0.obs;
+  getSelectedIndex() {
+    switch (primaryColor) {
+      case '0xFF2196F3':
+        selectedIndex.value = 0;
+        break;
+      case '0xff000000':
+        selectedIndex.value = 1;
+        break;
+      case '0xff0000ff':
+        selectedIndex.value = 2;
+        break;
+      case '0xffff0000':
+        selectedIndex.value = 3;
+        break;
+      case '0xFF1B5E20':
+        selectedIndex.value = 4;
+        break;
+      case '0xFFCFD8DC':
+        selectedIndex.value = 5;
+        break;
+      default:
+        break;
+    }
+  }
+
   ThemeData primaryTheme() {
     final theme = ThemeData(
-        primaryColor: Color(primaryColor.value),
-        colorScheme: ColorScheme.light(primary: Color(primaryColor.value)));
+        primaryColor: Color(int.parse(primaryColor)),
+        colorScheme:
+            ColorScheme.light(primary: Color(int.parse(primaryColor))));
     update();
     return theme;
   }
@@ -43,7 +73,7 @@ class ThemeController extends GetxController {
   initializeColor(colors setting) {
     final color = colorsLocalDB.get(setting.name);
     if (color != null) {
-      settings[setting]!.value = Color(color);
+      settings[setting]!.value = color;
     } else {
       settings[setting]!.value = defaultSettings[setting];
     }
@@ -55,6 +85,10 @@ class ThemeController extends GetxController {
   }
 
   final List<ThemeModel> themes = [
+    ThemeModel(
+        themeName: 'Primary-Theme',
+        primaryColor: '0xFF2196F3',
+        secondaryColor: '0xFFFFFFFF'),
     ThemeModel(
         themeName: 'Black-White',
         primaryColor: '0xff000000',
@@ -81,10 +115,10 @@ class ThemeController extends GetxController {
       required colors primary,
       required colors secondary}) async {
     selectedIndex.value = index;
-    settings[primary]!.value = int.parse(themes[index].primaryColor);
-    settings[secondary]!.value = int.parse(themes[index].secondaryColor);
+    settings[primary]!.value = themes[index].primaryColor;
+    settings[secondary]!.value = themes[index].secondaryColor;
     await colorsLocalDB.put(primary.name, settings[primary]!.value);
-    await colorsLocalDB.put(secondary.name, settings[secondary]!.value );
+    await colorsLocalDB.put(secondary.name, settings[secondary]!.value);
     update();
   }
 

@@ -33,7 +33,7 @@ class ChatView extends GetView<ChatViewController> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               height: height * 0.03,
-              color: Colors.blue,
+              color: primaryColor,
               child: Text(
                 controller.chats.user.name.capitalizeFirst!,
                 style: TextStyle(fontSize: width * 0.05, color: Colors.white),
@@ -115,7 +115,8 @@ class ChatView extends GetView<ChatViewController> {
                                       ),
                                       child: Text(msg.msg,
                                           style: TextStyle(
-                                              fontSize: width * 0.045)),
+                                              fontSize: width * 0.045,
+                                              color: Colors.black87)),
                                     ),
                                     Container(
                                       constraints: BoxConstraints(
@@ -129,6 +130,7 @@ class ChatView extends GetView<ChatViewController> {
                                           Text(
                                             '  ${controller.getTime(msg.time)}',
                                             style: TextStyle(
+                                                color: Colors.black,
                                                 fontSize: width * 0.025),
                                             textAlign: TextAlign.right,
                                           ),

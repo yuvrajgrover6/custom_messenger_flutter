@@ -1,4 +1,5 @@
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
+import 'package:custom_messenger/call/controller/theme_controller.dart';
 import 'package:custom_messenger/call/view/settings.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/home/views/all_chats_screen.dart';
@@ -15,11 +16,13 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(AuthController());
     Get.find<ContactController>();
+    final controller1 = Get.find<ThemeController>();
     return DefaultTabController(
       initialIndex: 0,
       length: 1,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(int.parse(controller1.primaryColor)),
           bottom: const TabBar(tabs: [
             Tab(text: 'CHATS'),
             // Tab(text: 'STATUS'),

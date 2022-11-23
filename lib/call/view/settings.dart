@@ -44,6 +44,7 @@ class SettingsScreen extends StatelessWidget {
                         selectedTileColor: Colors.green,
                         selectedColor: Colors.white,
                         tileColor: Colors.grey[200],
+                        textColor: Colors.black,
                         title: Text(controller.themes[index].themeName),
                         subtitle: Text('Theme #${index + 1}'),
                         trailing: CircleAvatar(
