@@ -1,5 +1,6 @@
 import 'package:custom_messenger/auth/models/user_model.dart';
 import 'package:custom_messenger/auth/view/login.dart';
+import 'package:custom_messenger/call/controller/theme_controller.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,7 +17,6 @@ void main() async {
   runApp(const MyApp());
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
-
 }
 
 class MyApp extends StatelessWidget {
@@ -27,12 +27,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: BindingsBuilder(() {
         Get.put(AuthController(), permanent: true);
+        Get.put(ThemeController(), permanent: true);
       }),
       debugShowCheckedModeBanner: false,
       title: 'Custom Messenger',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeController().primaryTheme(),
       home: const Login(),
     );
   }

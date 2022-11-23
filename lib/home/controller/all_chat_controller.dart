@@ -17,97 +17,41 @@ class AllChatController extends GetxController {
 
   @override
   void onInit() async {
-    await userModelss();
+    await getChattedUsers();
     super.onInit();
   }
 
-  List<UserModel> users = [];
-  List<UserModelPlusChat> usersAndChats = [];
+  List<UserModel>? users = [];
+  List<UserModelPlusChat>? chats = [];
 
-  userModelss() async {
-    final result = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(authController.currentUser!.displayName)
-        .collection('chats')
-        .get();
-    final allData = result.docs.map((e) => Chat.fromMap(e.data())).toList();
-    for (var i = 0; i < allData.length; i++) {
-      final user = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(allData[i].reciever)
-          .get();
-      final userData = user.data()!;
-      users.add(UserModel.fromMap(userData));
-    }
-    await getChatss();
-  }
-
-  // Stream<List<UserModel>> userModels() {
-  //   return FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(authController.myUser.value!.mobileNumber)
-  //       .collection('chats')
-  //       .snapshots()
-  //       .map((QuerySnapshot query) {
-  //     List<UserModel> users = [];
-  //     for (var doc in query.docs) {
-  //       if (doc.data() != null) {
-  //         FirebaseFirestore.instance
-  //             .collection('users')
-  //             .doc(doc.id)
-  //             .get()
-  //             .then((value) {
-  //           users.add(UserModel.fromMap(value.data()!));
-  //         });
-  //       }
-  //     }
-  //     return users;
-  //   });
-  // }
-
-  getChatss() async {
-    final result = await FirebaseFirestore.instance
+  Future<void> getChattedUsers() async {
+    final myChats = await FirebaseFirestore.instance
         .collection('users')
         .doc(authController.myUser.value!.mobileNumber)
         .collection('chats')
         .get();
-    final allData = result.docs.map((e) => Chat.fromMap(e.data())).toList();
-    for (var i = 0; i < allData.length; i++) {
-      final user = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(allData[i].reciever)
-          .get();
-      final userData = user.data();
-      usersAndChats
-          .add(UserModelPlusChat(UserModel.fromMap(userData!), allData[i]));
-      update();
+    final List<String> myChatsId = myChats.docs.map((doc) => doc.id).toList();
+    final allFirebaseUsers =
+        await FirebaseFirestore.instance.collection('users').get();
+    final allData = allFirebaseUsers.docs.map((doc) => doc.data()).toList();
+    final tempUsers = allData.map((e) => UserModel.fromMap(e)).toList();
+    users = tempUsers
+        .where((element) =>
+            element.uid != authController.myUser.value!.uid &&
+            myChatsId.contains(element.mobileNumber))
+        .toList();
+
+    final List<Chat> myChatsData =
+        myChats.docs.map((doc) => Chat.fromMap(doc.data())).toList();
+    final myUsers = users;
+    if (myUsers != null) {
+      for (int i = 0; i < myUsers.length; i++) {
+        final temp = UserModelPlusChat(myUsers[i], myChatsData[i]);
+        chats?.add(temp);
+      }
     }
     update();
   }
-
-  // Stream<List<UserModelPlusChat>> getChats(List<UserModel> users) {
-  //   return FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(authController.myUser.value!.mobileNumber)
-  //       .collection('chats')
-  //       .snapshots()
-  //       .map((QuerySnapshot query) {
-  //     List<UserModelPlusChat> users = [];
-  //     for (var doc in query.docs) {
-  //       if (doc.data() != null) {
-  //         FirebaseFirestore.instance
-  //             .collection('users')
-  //             .doc(doc.id)
-  //             .get()
-  //             .then((value) {
-  //           users.add(UserModelPlusChat(UserModel.fromMap(value.data()!),
-  //               Chat.fromMap(doc.data() as Map<String, dynamic>)));
-  //         });
-  //       }
-  //     }
-  //     return users;
-  //   });
-  // }
 
   String getMessageDate(Timestamp timestamp) {
     intl.DateFormat('dd/MM/yy').format(timestamp.toDate());

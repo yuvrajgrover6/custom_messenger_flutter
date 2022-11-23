@@ -26,9 +26,9 @@ class AllChatsScreen extends StatelessWidget {
           height: height,
           width: width,
           child: ListView.builder(
-            itemCount: controller.usersAndChats.length,
+            itemCount: controller.chats?.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
-              if (controller.usersAndChats.isEmpty) {
+              if (controller.chats == null) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
@@ -38,19 +38,19 @@ class AllChatsScreen extends StatelessWidget {
                   () => ChatView(),
                   binding: BindingsBuilder.put(() {
                     return Get.put(
-                        ChatViewController(controller.usersAndChats[index]));
+                        ChatViewController(controller.chats![index]));
                   }),
                 ),
                 leading: (CircleAvatar(
                   radius: 30,
                   backgroundImage: NetworkImage(
-                      controller.usersAndChats[index].user.profilePicUrl ?? ''),
+                      controller.chats?[index].user.profilePicUrl ?? ''),
                 )),
-                title: Text(controller.usersAndChats[index].user.name),
-                subtitle: Text(controller.usersAndChats[index].chat.lastSend),
+                title: Text(controller.chats![index].user.name),
+                subtitle: Text(controller.chats![index].chat.lastSend),
                 trailing: Text(
                   controller.getMessageDate(
-                      controller.usersAndChats[index].chat.lastSeenTime),
+                      controller.chats![index].chat.lastSeenTime),
                   style:
                       TextStyle(color: Colors.black54, fontSize: width * 0.03),
                 ),

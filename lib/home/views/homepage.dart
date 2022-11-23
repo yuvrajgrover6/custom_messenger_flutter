@@ -1,10 +1,12 @@
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
-import 'package:custom_messenger/call/view/all_calls.dart';
+import 'package:custom_messenger/call/view/settings.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/home/views/all_chats_screen.dart';
 import 'package:custom_messenger/status/views/all_status.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../call/view/all_calls.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -31,7 +33,14 @@ class HomePage extends StatelessWidget {
                 return [
                   PopupMenuItem(
                       child: TextButton(
-                    child: const Text('Hello'),
+                    child: const Text('Settings'),
+                    onPressed: () {
+                      Get.to(() => SettingsScreen());
+                    },
+                  )),
+                  PopupMenuItem(
+                      child: TextButton(
+                    child: const Text('Sign Out'),
                     onPressed: () {
                       controller.signOut();
                     },
@@ -41,8 +50,7 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: const TabBarView(
-            children: [AllChatsScreen(), AllStatus(), AllCalls()]),
+        body: TabBarView(children: [AllChatsScreen(), AllStatus(), AllCalls()]),
       ),
     );
   }
