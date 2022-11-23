@@ -14,6 +14,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await Get.putAsync(() async {
+    final c = ThemeController();
+    await c.onInit();
+    return c;
+  });
   runApp(const MyApp());
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
@@ -27,11 +33,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: BindingsBuilder(() {
         Get.put(AuthController(), permanent: true);
-        Get.put(ThemeController(), permanent: true);
       }),
       debugShowCheckedModeBanner: false,
       title: 'Custom Messenger',
-      theme: ThemeController().primaryTheme(),
+      theme: Get.find<ThemeController>().primaryTheme(),
       home: const Login(),
     );
   }

@@ -19,12 +19,12 @@ class ThemeController extends GetxController {
   int? primaryColor;
   int? secondaryColor;
   @override
-  onInit() async {
+  Future<void> onInit() async {
     final box = await openHiveBox('theme');
     final color1 = await box.get('primaryColor');
     final color2 = await box.get('secondaryColor');
-    primaryColor = int.parse(color1);
-    secondaryColor = int.parse(color2);
+    primaryColor = color1 == null ? Colors.blue.value : int.parse(color1);
+    secondaryColor = color1 == null ? Colors.orange.value : int.parse(color2);
     update();
     await box.close();
     log('primaryColor: ${primaryColor.toString()}');

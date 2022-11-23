@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChatViewController extends GetxController
-    with StateMixin<Set<ChatMessage>> {
+    with StateMixin<List<ChatMessage>> {
   Rx<bool> isEmojiVisible = true.obs;
   FocusNode focusNode = FocusNode();
   TextEditingController msgController = TextEditingController();
@@ -24,7 +24,7 @@ class ChatViewController extends GetxController
   ChatViewController(this.chats);
   @override
   void onInit() async {
-    change(await getChatsWith(), status: RxStatus.success());
+    await getChatsWith();
     await setStatusRead();
     await controller.position.moveTo(controller.position.maxScrollExtent);
     super.onInit();
@@ -95,6 +95,7 @@ class ChatViewController extends GetxController
         status: Status.unread,
         sender: authController.myUser.value!.mobileNumber);
     try {
+      change(value?..add(msgModel), status: RxStatus.success());
       await FirebaseFirestore.instance
           .collection('users')
           .doc(authController.currentUser!.displayName)
@@ -104,7 +105,8 @@ class ChatViewController extends GetxController
           .add(msgModel.toMap())
           .then((doc) {
         msgController.clear();
-        change(value?..add(msgModel), status: RxStatus.success());
+      }).onError((error, stackTrace) {
+        change(value?..remove(msgModel), status: RxStatus.success());
       });
       await FirebaseFirestore.instance
           .collection('users')
@@ -124,7 +126,7 @@ class ChatViewController extends GetxController
           .doc(user.mobileNumber)
           .collection('chats')
           .doc(authController.myUser.value!.mobileNumber)
-          .set(Chat(user.mobileNumber, msgModel.msg, msgModel.time).toMap());
+          .set(Chat(authController.myUser.value!.mobileNumber, msgModel.msg, msgModel.time).toMap());
       await controller.position.moveTo(controller.position.maxScrollExtent);
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -135,36 +137,68 @@ class ChatViewController extends GetxController
 
   final UserModelPlusChat chats;
   DocumentSnapshot? lastLoadedDoc;
-  Future<Set<ChatMessage>> getChatsWith() async {
+  Future<void> getChatsWith() async {
     final List<QueryDocumentSnapshot<Map<String, dynamic>>> result;
-    if (lastLoadedDoc != null) {
-      result = (await FirebaseFirestore.instance
-              .collection('users')
-              .doc(authController.myUser.value!.mobileNumber)
-              .collection('chats')
-              .doc(chats.chat.reciever)
-              .collection('messages')
-              .orderBy('time')
-              .startAfterDocument(lastLoadedDoc!)
-              .limit(50)
-              .get())
-          .docs;
-      lastLoadedDoc = result.last;
-    } else {
-      result = (await FirebaseFirestore.instance
-              .collection('users')
-              .doc(authController.myUser.value!.mobileNumber)
-              .collection('chats')
-              .doc(chats.chat.reciever)
-              .collection('messages')
-              .orderBy('time')
-              .limit(50)
-              .get())
-          .docs;
-    }
-    return result
-        .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
-        .toSet();
+
+    final query = await (FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.myUser.value!.mobileNumber)
+        .collection('chats')
+        .doc(chats.chat.reciever)
+        .collection('messages')
+        .orderBy('time')
+        .get());
+    print(authController.myUser.value!.mobileNumber);
+    print(chats.chat.reciever);
+    change(query.docs.map((e) => ChatMessage.fromMap(e.data())).toList(),
+        status: RxStatus.success());
+    print("World");
+    (FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.myUser.value!.mobileNumber)
+        .collection('chats')
+        .doc(chats.chat.reciever)
+        .collection('messages')
+        .orderBy('time')
+        // .startAfterDocument(lastLoadedDoc!)
+        // .limit(50)
+        .snapshots()
+        .listen((event) {
+      // final listNewDocs = event.docChanges;
+      change(event.docs.map((e) => ChatMessage.fromMap(e.data())).toList(),
+          status: RxStatus.success());
+
+      // final newChats =
+      //     listNewDocs.map((e) => ChatMessage.fromMap(e.doc.data()!));
+      // for (var i = 0; i < (value?.length ?? 0); i++) {
+      //   final old = value![i];
+      //   newChats.forEach((newElement) {
+      //     if (newElement.time == old.time) {
+      //       value!.replaceRange(i, i + 1, [newElement]);
+      //     }
+      //     else {
+
+      //     }
+      //   });
+      // }
+    }));
+    // .docs;
+    //   lastLoadedDoc = result.last;
+    // } else {
+    //   result = (await FirebaseFirestore.instance
+    //           .collection('users')
+    //           .doc(authController.myUser.value!.mobileNumber)
+    //           .collection('chats')
+    //           .doc(chats.chat.reciever)
+    //           .collection('messages')
+    //           .orderBy('time')
+    //           .limit(50)
+    //           .get())
+    //       .docs;
+    // }
+    // return result
+    //     .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
+    //     .toSet();
   }
 
   String getTime(Timestamp timestamp) {
