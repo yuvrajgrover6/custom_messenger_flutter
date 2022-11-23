@@ -39,6 +39,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Custom Messenger',
       theme: ThemeData(
+          appBarTheme: AppBarTheme(
+              backgroundColor: Color(int.parse(controller.primaryColor)),
+              foregroundColor: Color(int.parse(controller.secondaryColor))),
           textTheme: TextTheme(
             headline1:
                 TextStyle(color: Color(int.parse(controller.secondaryColor))),
