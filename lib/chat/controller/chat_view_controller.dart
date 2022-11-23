@@ -89,12 +89,16 @@ class ChatViewController extends GetxController
   sendMsg(
     UserModel user,
   ) async {
+    if (msgController.text == '') {
+      return;
+    }
     final ChatMessage msgModel = ChatMessage(
         msg: msgController.text,
         time: Timestamp.fromDate(DateTime.now()),
         type: "msg",
         status: Status.unread,
         sender: authController.myUser.value!.mobileNumber);
+    msgController.text = '';
     try {
       change(value?..add(msgModel), status: RxStatus.success());
       await FirebaseFirestore.instance
@@ -240,14 +244,7 @@ class ChatViewController extends GetxController
         .get()
         .then((value) {
       for (var element in value.docs) {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(authController.myUser.value!.mobileNumber)
-            .collection('chats')
-            .doc(chats.chat.reciever)
-            .collection('messages')
-            .doc(element.id)
-            .update({'status': 'read'});
+        element.reference.update({'status': 'read'});
       }
     });
   }
