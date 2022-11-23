@@ -36,11 +36,15 @@ class SettingsScreen extends StatelessWidget {
                     width: width,
                     child: Obx(
                       () => ListTile(
-                        onTap: () => controller.handleOnTap(index),
+                        onTap: () => controller.handleOnTap(
+                            index: index,
+                            primary: colors.primaryColor,
+                            secondary: colors.secondaryColor),
                         selected: controller.selectedIndex.value == index,
                         selectedTileColor: Colors.green,
                         selectedColor: Colors.white,
                         tileColor: Colors.grey[200],
+                        textColor: Colors.black,
                         title: Text(controller.themes[index].themeName),
                         subtitle: Text('Theme #${index + 1}'),
                         trailing: CircleAvatar(

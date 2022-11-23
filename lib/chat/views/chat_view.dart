@@ -1,10 +1,12 @@
 import 'package:bubble/bubble.dart';
 import 'package:custom_messenger/auth/controller/auth_controller.dart';
 import 'package:custom_messenger/chat/controller/chat_view_controller.dart';
+import 'package:custom_messenger/home/views/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../home/model/chat_message.dart';
+import '../../home/views/all_chats_screen.dart';
 
 class ChatView extends GetView<ChatViewController> {
   ChatView({
@@ -26,11 +28,12 @@ class ChatView extends GetView<ChatViewController> {
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Material(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               height: height * 0.03,
-              color: Colors.blue,
+              color: primaryColor,
               child: Text(
                 controller.chats.user.name.capitalizeFirst!,
                 style: TextStyle(fontSize: width * 0.05, color: Colors.white),
@@ -40,7 +43,10 @@ class ChatView extends GetView<ChatViewController> {
           titleSpacing: 0,
           leadingWidth: width * 0.19,
           leading: GestureDetector(
-            onTap: () => Get.back(),
+            onTap: () {
+              controller.focusNode.unfocus();
+              Get.offAll(() => const HomePage());
+            },
             child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 7),
                 child: Row(
@@ -109,7 +115,8 @@ class ChatView extends GetView<ChatViewController> {
                                       ),
                                       child: Text(msg.msg,
                                           style: TextStyle(
-                                              fontSize: width * 0.045)),
+                                              fontSize: width * 0.045,
+                                              color: Colors.black87)),
                                     ),
                                     Container(
                                       constraints: BoxConstraints(
@@ -123,6 +130,7 @@ class ChatView extends GetView<ChatViewController> {
                                           Text(
                                             '  ${controller.getTime(msg.time)}',
                                             style: TextStyle(
+                                                color: Colors.black,
                                                 fontSize: width * 0.025),
                                             textAlign: TextAlign.right,
                                           ),

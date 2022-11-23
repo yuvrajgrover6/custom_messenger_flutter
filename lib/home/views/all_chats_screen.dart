@@ -41,13 +41,20 @@ class AllChatsScreen extends StatelessWidget {
                         ChatViewController(controller.chats![index]));
                   }),
                 ),
-                leading: (CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(
-                      controller.chats?[index].user.profilePicUrl ?? ''),
-                )),
-                title: Text(controller.chats![index].user.name),
-                subtitle: Text(controller.chats![index].chat.lastSend),
+                leading: GestureDetector(
+                  onTap: () {},
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(
+                        controller.chats?[index].user.profilePicUrl ?? ''),
+                  ),
+                ),
+                title: Text(controller.chats![index].user.name,
+                    style: TextStyle(color: Colors.black)),
+                subtitle: Text(
+                  controller.chats![index].chat.lastSend,
+                  style: const TextStyle(color: Colors.grey),
+                ),
                 trailing: Text(
                   controller.getMessageDate(
                       controller.chats![index].chat.lastSeenTime),
