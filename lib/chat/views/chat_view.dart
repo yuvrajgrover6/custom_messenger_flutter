@@ -8,14 +8,33 @@ import 'package:get/get.dart';
 import '../../home/model/chat_message.dart';
 import '../../home/views/all_chats_screen.dart';
 
-class ChatView extends GetView<ChatViewController> {
+class ChatView extends StatefulWidget {
   ChatView({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<ChatView> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = Get.find<ChatViewController>();
+      if (controller.controller.hasClients) {
+        controller.controller
+            .jumpTo(controller.controller.position.maxScrollExtent);
+      }
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ChatViewController>();
     final primaryColor = Theme.of(context).primaryColor;
+    final secondaryColor = Theme.of(context).colorScheme.secondary;
     final authController = Get.find<AuthController>();
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
@@ -144,7 +163,7 @@ class ChatView extends GetView<ChatViewController> {
                                                   : Icon(
                                                       Icons.check_circle,
                                                       size: width * 0.04,
-                                                      color: primaryColor,
+                                                      color: secondaryColor,
                                                     ),
                                         ],
                                       ),

@@ -23,11 +23,11 @@ class ChatViewController extends GetxController
   final ScrollController controller = ScrollController();
 
   ChatViewController(this.chats);
+
   @override
   void onInit() async {
     await getChatsWith();
     await setStatusRead();
-    await controller.position.moveTo(controller.position.maxScrollExtent);
     super.onInit();
 
     final configs = ImagePickerConfigs();
@@ -130,9 +130,14 @@ class ChatViewController extends GetxController
           .set(Chat(authController.myUser.value!.mobileNumber, msgModel.msg,
                   msgModel.time)
               .toMap());
+      msgController.clear();
+
       await controller.position.moveTo(controller.position.maxScrollExtent);
     } catch (e) {
       Get.snackbar('Error', e.toString());
+      msgController.clear();
+    } finally {
+      msgController.clear();
     }
   }
 
