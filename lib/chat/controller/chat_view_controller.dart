@@ -145,9 +145,9 @@ class ChatViewController extends GetxController
 
     final query = await (FirebaseFirestore.instance
         .collection('users')
-        .doc(authController.myUser.value!.mobileNumber)
-        .collection('chats')
         .doc(chats.chat.reciever)
+        .collection('chats')
+        .doc(authController.myUser.value!.mobileNumber)
         .collection('messages')
         .orderBy('time')
         .get());
@@ -158,9 +158,9 @@ class ChatViewController extends GetxController
     print("World");
     (FirebaseFirestore.instance
         .collection('users')
-        .doc(authController.myUser.value!.mobileNumber)
-        .collection('chats')
         .doc(chats.chat.reciever)
+        .collection('chats')
+        .doc(authController.myUser.value!.mobileNumber)
         .collection('messages')
         .orderBy('time')
         // .startAfterDocument(lastLoadedDoc!)
@@ -172,8 +172,13 @@ class ChatViewController extends GetxController
           authController.myUser.value!.mobileNumber) {
         FlutterRingtonePlayer.playNotification();
       }
-      change(event.docs.map((e) => ChatMessage.fromMap(e.data())).toList(),
-          status: RxStatus.success());
+      final allChat =
+          event.docs.map((e) => ChatMessage.fromMap(e.data())).toList();
+      change(allChat, status: RxStatus.success());
+
+      if (allChat.any((element) => element.status == Status.unread)) {
+        setStatusRead();
+      }
 
       // final newChats =
       //     listNewDocs.map((e) => ChatMessage.fromMap(e.doc.data()!));
@@ -206,6 +211,8 @@ class ChatViewController extends GetxController
     // return result
     //     .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
     //     .toSet();
+
+    await controller.position.moveTo(controller.position.maxScrollExtent);
   }
 
   String getTime(Timestamp timestamp) {
