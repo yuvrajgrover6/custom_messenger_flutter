@@ -8,27 +8,10 @@ import 'package:get/get.dart';
 import '../../home/model/chat_message.dart';
 import '../../home/views/all_chats_screen.dart';
 
-class ChatView extends StatefulWidget {
+class ChatView extends StatelessWidget {
   ChatView({
     Key? key,
   }) : super(key: key);
-
-  @override
-  State<ChatView> createState() => _ChatViewState();
-}
-
-class _ChatViewState extends State<ChatView> {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = Get.find<ChatViewController>();
-      if (controller.controller.hasClients) {
-        controller.controller
-            .jumpTo(controller.controller.position.maxScrollExtent);
-      }
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,85 +78,93 @@ class _ChatViewState extends State<ChatView> {
             Expanded(
                 child: controller.obx((state) => Container(
                       padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                      child: ListView.builder(
-                        controller: controller.controller,
-                        itemCount: state?.length ?? 0,
-                        itemBuilder: ((context, index) {
-                          if (state?.isEmpty ?? true) {
-                            const Center(
-                                child: Text(
-                              "Chat is empty",
-                              style: TextStyle(fontSize: 24),
-                            ));
-                          }
-                          final msg = state!.elementAt(index);
-                          final isMe = msg.sender ==
-                              authController.myUser.value!.mobileNumber;
-                          return Container(
-                            margin:
-                                EdgeInsets.symmetric(vertical: height * 0.007),
-                            child: Bubble(
-                              color: isMe
-                                  ? primaryColor.withOpacity(0.2)
-                                  : Colors.white,
-                              padding: BubbleEdges.only(left: width * 0.04),
-                              alignment:
-                                  isMe ? Alignment.topRight : Alignment.topLeft,
-                              nip:
-                                  isMe ? BubbleNip.rightTop : BubbleNip.leftTop,
-                              child: Container(
-                                constraints: BoxConstraints(
-                                    minWidth: 0, maxWidth: width * 0.6),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      constraints: BoxConstraints(
-                                        minWidth: 0,
-                                        maxWidth: width * 0.48,
-                                      ),
-                                      child: Text(msg.msg,
-                                          style: TextStyle(
-                                              fontSize: width * 0.045,
-                                              color: Colors.black87)),
-                                    ),
-                                    Container(
-                                      constraints: BoxConstraints(
-                                          minWidth: 0, maxWidth: width * 0.48),
-                                      alignment: Alignment.bottomRight,
-                                      width: width * 0.12,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            '  ${controller.getTime(msg.time)}',
+                      child: Scrollbar(
+                        // controller: controller.controller,
+                        interactive: true,
+                        child: ListView.builder(
+                          // controller: controller.controller,
+                          itemCount: state?.length ?? 0,
+                          itemBuilder: ((context, index) {
+                            if (state?.isEmpty ?? true) {
+                              const Center(
+                                  child: Text(
+                                "Chat is empty",
+                                style: TextStyle(fontSize: 24),
+                              ));
+                            }
+                            final msg = state!.elementAt(index);
+                            final isMe = msg.sender ==
+                                authController.myUser.value!.mobileNumber;
+                            return Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: height * 0.007),
+                              child: Bubble(
+                                color: isMe
+                                    ? primaryColor.withOpacity(0.2)
+                                    : Colors.white,
+                                padding: BubbleEdges.only(left: width * 0.04),
+                                alignment: isMe
+                                    ? Alignment.topRight
+                                    : Alignment.topLeft,
+                                nip: isMe
+                                    ? BubbleNip.rightTop
+                                    : BubbleNip.leftTop,
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                      minWidth: 0, maxWidth: width * 0.6),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        constraints: BoxConstraints(
+                                          minWidth: 0,
+                                          maxWidth: width * 0.48,
+                                        ),
+                                        child: Text(msg.msg,
                                             style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: width * 0.025),
-                                            textAlign: TextAlign.right,
-                                          ),
-                                          !isMe
-                                              ? const SizedBox.shrink()
-                                              : (msg.status == Status.unread)
-                                                  ? Icon(Icons.check,
-                                                      size: width * 0.04)
-                                                  : Icon(
-                                                      Icons.check_circle,
-                                                      size: width * 0.04,
-                                                      color: secondaryColor,
-                                                    ),
-                                        ],
+                                                fontSize: width * 0.045,
+                                                color: Colors.black87)),
                                       ),
-                                    )
-                                  ],
+                                      Container(
+                                        constraints: BoxConstraints(
+                                            minWidth: 0,
+                                            maxWidth: width * 0.48),
+                                        alignment: Alignment.bottomRight,
+                                        width: width * 0.12,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              '  ${controller.getTime(msg.time)}',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: width * 0.025),
+                                              textAlign: TextAlign.right,
+                                            ),
+                                            !isMe
+                                                ? const SizedBox.shrink()
+                                                : (msg.status == Status.unread)
+                                                    ? Icon(Icons.check,
+                                                        size: width * 0.04)
+                                                    : Icon(
+                                                        Icons.check_circle,
+                                                        size: width * 0.04,
+                                                        color: secondaryColor,
+                                                      ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }),
+                            );
+                          }),
+                        ),
                       ),
                     ))),
             Row(

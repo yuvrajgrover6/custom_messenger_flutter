@@ -1,11 +1,13 @@
 import 'package:custom_messenger/auth/models/user_model.dart';
 import 'package:custom_messenger/auth/view/login.dart';
 import 'package:custom_messenger/call/controller/theme_controller.dart';
+import 'package:custom_messenger/call/view/restart_widget.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'auth/controller/auth_controller.dart';
@@ -23,7 +25,7 @@ void main() async {
     await controller.intializeLocalDB();
     return controller;
   }, permanent: true);
-  runApp(const MyApp());
+  runApp(RestartWidget(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -3,9 +3,13 @@ import 'dart:developer';
 import 'package:custom_messenger/call/model/color_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:dynamic_icon_flutter/dynamic_icon_flutter.dart';
 
+import '../view/restart_widget.dart';
 import 'local_db_controller.dart';
 
 enum colors {
@@ -110,7 +114,7 @@ class ThemeController extends GetxController {
         primaryColor: '0xFFCFD8DC',
         secondaryColor: '0xFF000000')
   ];
-  handleOnTap(
+  Future<void> handleOnTap(
       {required int index,
       required colors primary,
       required colors secondary}) async {
@@ -125,5 +129,33 @@ class ThemeController extends GetxController {
   reset() async {
     await colorsLocalDB.clear();
     initializeSettings();
+  }
+
+  List<String> iconNames = [
+    "icon_1",
+    "icon_2",
+    "icon_3",
+    "icon_4",
+    "icon_5",
+    "icon_6",
+    "MainActivity",
+  ];
+
+  Future<void> changeAppIcon(int index) async {
+    try {
+      if (await DynamicIconFlutter.supportsAlternateIcons) {
+        await DynamicIconFlutter.setAlternateIconName("icon_${index + 1}");
+        print("App icon change successful");
+        return;
+      }
+    } on PlatformException catch (e) {
+      if (await DynamicIconFlutter.supportsAlternateIcons) {
+        await DynamicIconFlutter.setAlternateIconName(null);
+        print("Change app icon back to default");
+        return;
+      } else {
+        print("Failed to change app icon");
+      }
+    }
   }
 }

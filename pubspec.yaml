@@ -50,6 +50,9 @@ dependencies:
   hive_flutter:
   bubble:
   flutter_ringtone_player: ^3.2.0
+  flutter_phoenix: ^1.0.0
+  flutter_dynamic_icon: ^2.1.0
+  dynamic_icon_flutter: ^0.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -79,6 +82,7 @@ flutter:
   assets:
     - assets/svg/
     - assets/lottie/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

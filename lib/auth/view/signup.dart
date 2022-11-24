@@ -47,16 +47,16 @@ class SignUp extends StatelessWidget {
                               Text(
                                 'Join Us',
                                 style: TextStyle(
-                                  fontSize: width * 0.06,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                    fontSize: width * 0.06,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
                               ),
                               Text(
                                 'Start Chatting With Friends',
                                 style: TextStyle(
-                                  fontSize: width * 0.04,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                    fontSize: width * 0.04,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
                               ),
                             ],
                           ),
@@ -87,7 +87,10 @@ class SignUp extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text('Don\'t have an account?'),
+                              const Text(
+                                'Don\'t have an account?',
+                                style: TextStyle(color: Colors.black),
+                              ),
                               TextButton(
                                 onPressed: () {
                                   Get.off(() => const Login());

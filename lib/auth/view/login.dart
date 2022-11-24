@@ -46,6 +46,7 @@ class Login extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: width * 0.06,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.black,
                               ),
                             ),
                             Text(
@@ -53,6 +54,7 @@ class Login extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: width * 0.04,
                                 fontWeight: FontWeight.w500,
+                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -67,6 +69,7 @@ class Login extends StatelessWidget {
                             width: width,
                             hint: 'Password',
                             validator: validatePassword,
+                            isPassword: true,
                             controller: controller.passwordController),
                         SizedBox(
                           width: width,
@@ -84,7 +87,8 @@ class Login extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Don\'t have an account?'),
+                            const Text('Don\'t have an account?',
+                                style: TextStyle(color: Colors.black)),
                             TextButton(
                               onPressed: () {
                                 Get.off(() => const SignUp());

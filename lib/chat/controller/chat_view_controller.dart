@@ -20,7 +20,7 @@ class ChatViewController extends GetxController
   Uint8List? bytes;
   List bothNumbers = [];
   final AuthController authController = Get.find();
-  final ScrollController controller = ScrollController();
+  // final ScrollController controller = ScrollController();
 
   ChatViewController(this.chats);
 
@@ -89,9 +89,6 @@ class ChatViewController extends GetxController
   sendMsg(
     UserModel user,
   ) async {
-    if (msgController.text == '') {
-      return;
-    }
     final ChatMessage msgModel = ChatMessage(
         msg: msgController.text,
         time: Timestamp.fromDate(DateTime.now()),
@@ -136,7 +133,7 @@ class ChatViewController extends GetxController
               .toMap());
       msgController.clear();
 
-      await controller.position.moveTo(controller.position.maxScrollExtent);
+      // await controller.position.moveTo(controller.position.maxScrollExtent);
     } catch (e) {
       Get.snackbar('Error', e.toString());
       msgController.clear();
@@ -221,7 +218,7 @@ class ChatViewController extends GetxController
     //     .map<ChatMessage>((e) => ChatMessage.fromMap(e.data()))
     //     .toSet();
 
-    await controller.position.moveTo(controller.position.maxScrollExtent);
+    // await controller.position.moveTo(controller.position.maxScrollExtent);
   }
 
   String getTime(Timestamp timestamp) {
