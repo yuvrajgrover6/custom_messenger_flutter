@@ -7,6 +7,7 @@ import 'package:custom_messenger/auth/models/user_model.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/home/model/chat.dart';
 import 'package:custom_messenger/home/model/chat_message.dart';
+import 'package:custom_messenger/home/views/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -140,6 +141,16 @@ class ChatViewController extends GetxController
     } finally {
       msgController.clear();
     }
+  }
+
+  Future<void> deleteChat({required String receiver}) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.currentUser!.displayName)
+        .collection('chats')
+        .doc(receiver)
+        .delete();
+    Get.offAll(HomePage());
   }
 
   ContactController contactController = Get.find();

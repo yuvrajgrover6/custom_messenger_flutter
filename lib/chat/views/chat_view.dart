@@ -64,11 +64,16 @@ class ChatView extends StatelessWidget {
                 )),
           ),
           actions: [
-            const Icon(Icons.search),
-            SizedBox(width: width * 0.04),
-            const Icon(Icons.call),
             PopupMenuButton(itemBuilder: (context) {
-              return [const PopupMenuItem(child: Text('Block'))];
+              return [
+                PopupMenuItem(
+                    onTap: () => controller.deleteChat(
+                        receiver: controller.chats.user.mobileNumber),
+                    child: const Text(
+                      'Delete Chat',
+                      style: TextStyle(color: Colors.black),
+                    )),
+              ];
             })
           ],
         ),
@@ -175,6 +180,7 @@ class ChatView extends StatelessWidget {
                     margin: EdgeInsets.only(
                         left: width * 0.02, bottom: height * 0.01),
                     child: TextFormField(
+                      style: const TextStyle(color: Colors.black),
                       controller: controller.msgController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(

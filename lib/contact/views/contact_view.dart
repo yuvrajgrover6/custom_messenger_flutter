@@ -8,6 +8,7 @@ class ContactView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).primaryColor;
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     Get.put(ContactController());
@@ -35,10 +36,10 @@ class ContactView extends StatelessWidget {
                     child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Wrap(children: const [
+                      Wrap(children: [
                         Text(
                           'Please have patience, we are fetching your contacts',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 20, color: color),
                           textAlign: TextAlign.center,
                         )
                       ]),
@@ -58,8 +59,12 @@ class ContactView extends StatelessWidget {
                             backgroundImage: NetworkImage(user.profilePicUrl),
                             radius: width * 0.1,
                           ),
-                          title: Text(user.name),
-                          subtitle: Text(user.mobileNumber),
+                          title: Text(user.name,
+                              style: TextStyle(color: Colors.black)),
+                          subtitle: Text(
+                            user.mobileNumber,
+                            style: TextStyle(color: Colors.grey),
+                          ),
                           trailing: IconButton(
                               icon: const Icon(Icons.message),
                               onPressed: () {}),
