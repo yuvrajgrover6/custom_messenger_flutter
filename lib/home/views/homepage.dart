@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
     final controller = Get.put(AuthController());
     Get.find<ContactController>();
     final controller1 = Get.find<ThemeController>();
-    return DefaultTabController(
+    return DefaultTabController( 
       initialIndex: 0,
       length: 1,
       child: Scaffold(
