@@ -1,7 +1,7 @@
 import 'package:custom_messenger/auth/models/user_model.dart';
 import 'package:custom_messenger/auth/view/login.dart';
-import 'package:custom_messenger/call/controller/theme_controller.dart';
-import 'package:custom_messenger/call/view/restart_widget.dart';
+import 'package:custom_messenger/settings/controller/theme_controller.dart';
+import 'package:custom_messenger/settings/view/restart_widget.dart';
 import 'package:custom_messenger/contact/controller/contact_controller.dart';
 import 'package:custom_messenger/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'auth/controller/auth_controller.dart';
-import 'call/controller/local_db_controller.dart';
+import 'settings/controller/local_db_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -113,8 +113,8 @@ class ContactController extends GetxController {
   }
 
   void onPress(UserModel user) async {
-    final UserModelPlusChat demoMessage = UserModelPlusChat(
-        user, Chat(user.mobileNumber, 'Hello', Timestamp.now()));
+    final UserModelPlusChat demoMessage =
+        UserModelPlusChat(user, Chat(user.mobileNumber, '', Timestamp.now()));
 
     await FirebaseFirestore.instance
         .collection('users')

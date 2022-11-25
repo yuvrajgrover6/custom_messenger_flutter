@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:custom_messenger/call/model/color_model.dart';
+import 'package:custom_messenger/settings/model/color_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

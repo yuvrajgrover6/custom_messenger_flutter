@@ -9,10 +9,7 @@ import '../../home/model/chat_message.dart';
 import '../../home/views/all_chats_screen.dart';
 
 class ChatView extends StatelessWidget {
-  ChatView({
-    Key? key,
-  }) : super(key: key);
-
+  const ChatView({super.key});
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ChatViewController>();
@@ -67,143 +64,238 @@ class ChatView extends StatelessWidget {
             PopupMenuButton(itemBuilder: (context) {
               return [
                 PopupMenuItem(
-                    onTap: () => controller.deleteChat(
-                        receiver: controller.chats.user.mobileNumber),
-                    child: const Text(
-                      'Delete Chat',
-                      style: TextStyle(color: Colors.black),
-                    )),
+                    child: ListTile(
+                  minLeadingWidth: 0,
+                  contentPadding: EdgeInsets.zero,
+                  onTap: () {
+                    Get.defaultDialog(
+                        title: 'Delete Message',
+                        titleStyle: const TextStyle(color: Colors.black),
+                        middleText:
+                            'Are you sure you want to delete this message?',
+                        middleTextStyle: const TextStyle(color: Colors.black),
+                        cancelTextColor: secondaryColor,
+                        confirmTextColor: secondaryColor,
+                        buttonColor: primaryColor,
+                        cancel: ElevatedButton(
+                            onPressed: () {
+                              Get.back();
+                            },
+                            child: const Text('No')),
+                        confirm: ElevatedButton(
+                            onPressed: () {
+                              controller.deleteChat(
+                                  receiver: controller.chats.user.mobileNumber);
+                              Get.back();
+                            },
+                            child: const Text('Yes')));
+                  },
+                  title:const  Text(
+                    'Delete Chat',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  trailing: const Icon(
+                    Icons.delete,
+                    color: Colors.black,
+                  ),
+                )),
               ];
             })
           ],
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-                child: controller.obx((state) => Container(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                      child: Scrollbar(
-                        // controller: controller.controller,
-                        interactive: true,
-                        child: ListView.builder(
-                          // controller: controller.controller,
-                          itemCount: state?.length ?? 0,
-                          itemBuilder: ((context, index) {
-                            if (state?.isEmpty ?? true) {
-                              const Center(
-                                  child: Text(
-                                "Chat is empty",
-                                style: TextStyle(fontSize: 24),
-                              ));
-                            }
-                            final msg = state!.elementAt(index);
-                            final isMe = msg.sender ==
-                                authController.myUser.value!.mobileNumber;
-                            return Container(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: height * 0.007),
-                              child: Bubble(
-                                color: isMe
-                                    ? primaryColor.withOpacity(0.2)
-                                    : Colors.white,
-                                padding: BubbleEdges.only(left: width * 0.04),
-                                alignment: isMe
-                                    ? Alignment.topRight
-                                    : Alignment.topLeft,
-                                nip: isMe
-                                    ? BubbleNip.rightTop
-                                    : BubbleNip.leftTop,
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                      minWidth: 0, maxWidth: width * 0.6),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        constraints: BoxConstraints(
-                                          minWidth: 0,
-                                          maxWidth: width * 0.48,
-                                        ),
-                                        child: Text(msg.msg,
-                                            style: TextStyle(
-                                                fontSize: width * 0.045,
-                                                color: Colors.black87)),
-                                      ),
-                                      Container(
-                                        constraints: BoxConstraints(
-                                            minWidth: 0,
-                                            maxWidth: width * 0.48),
-                                        alignment: Alignment.bottomRight,
-                                        width: width * 0.12,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              '  ${controller.getTime(msg.time)}',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: width * 0.025),
-                                              textAlign: TextAlign.right,
-                                            ),
-                                            !isMe
-                                                ? const SizedBox.shrink()
-                                                : (msg.status == Status.unread)
-                                                    ? Icon(Icons.check,
-                                                        size: width * 0.04)
-                                                    : Icon(
-                                                        Icons.check_circle,
-                                                        size: width * 0.04,
-                                                        color: secondaryColor,
+        body: GetBuilder<ChatViewController>(builder: (cntrl) {
+          return cntrl.isDeleting
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: controller.obx((state) => Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: width * 0.04),
+                              child: Scrollbar(
+                                // controller: controller.controller,
+                                interactive: true,
+                                child: ListView.builder(
+                                  // controller: controller.controller,
+                                  itemCount: state?.length ?? 0,
+                                  itemBuilder: ((context, index) {
+                                    if (state?.isEmpty ?? true) {
+                                      const Center(
+                                          child: Text(
+                                        "Chat is empty",
+                                        style: TextStyle(fontSize: 24),
+                                      ));
+                                    }
+                                    final msg = state!.elementAt(index);
+                                    final isMe = msg.sender ==
+                                        authController
+                                            .myUser.value!.mobileNumber;
+                                    return Container(
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: height * 0.007),
+                                      child: GestureDetector(
+                                        onLongPress: () {
+                                          Get.defaultDialog(
+                                              title: 'Delete Message',
+                                              titleStyle: const TextStyle(
+                                                  color: Colors.black),
+                                              middleText:
+                                                  'Are you sure you want to delete this message?',
+                                              middleTextStyle: const TextStyle(
+                                                  color: Colors.black),
+                                              cancelTextColor: secondaryColor,
+                                              confirmTextColor: secondaryColor,
+                                              buttonColor: primaryColor,
+                                              cancel: ElevatedButton(
+                                                  onPressed: () {
+                                                    Get.back();
+                                                  },
+                                                  child: const Text('No')),
+                                              confirm: ElevatedButton(
+                                                  onPressed: () {
+                                                    controller.deleteMsg(
+                                                        docId: controller
+                                                            .allChatDocIds
+                                                            .elementAt(index),
+                                                        receiver: controller
+                                                            .chats
+                                                            .user
+                                                            .mobileNumber);
+                                                    Get.back();
+                                                  },
+                                                  child: const Text('Yes')));
+                                        },
+                                        child: Bubble(
+                                          color: isMe
+                                              ? primaryColor.withOpacity(0.2)
+                                              : Colors.white,
+                                          padding: BubbleEdges.only(
+                                              left: width * 0.04),
+                                          alignment: isMe
+                                              ? Alignment.topRight
+                                              : Alignment.topLeft,
+                                          nip: isMe
+                                              ? BubbleNip.rightTop
+                                              : BubbleNip.leftTop,
+                                          child: Container(
+                                            constraints: BoxConstraints(
+                                                minWidth: 0,
+                                                maxWidth: width * 0.6),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  constraints: BoxConstraints(
+                                                    minWidth: 0,
+                                                    maxWidth: width * 0.48,
+                                                  ),
+                                                  child: Text(msg.msg,
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              width * 0.045,
+                                                          color:
+                                                              Colors.black87)),
+                                                ),
+                                                Container(
+                                                  constraints: BoxConstraints(
+                                                      minWidth: 0,
+                                                      maxWidth: width * 0.48),
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  width: width * 0.12,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      Text(
+                                                        '  ${controller.getTime(msg.time)}',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize:
+                                                                width * 0.025),
+                                                        textAlign:
+                                                            TextAlign.right,
                                                       ),
-                                          ],
+                                                      !isMe
+                                                          ? const SizedBox
+                                                              .shrink()
+                                                          : (controller
+                                                                      .isSending &&
+                                                                  index ==
+                                                                      state.length -
+                                                                          1)
+                                                              ? Icon(
+                                                                  Icons
+                                                                      .timer_outlined,
+                                                                  size: width *
+                                                                      0.04)
+                                                              : (msg.status ==
+                                                                      Status
+                                                                          .unread)
+                                                                  ? Icon(
+                                                                      Icons
+                                                                          .check,
+                                                                      size: width *
+                                                                          0.04)
+                                                                  : Icon(
+                                                                      Icons
+                                                                          .check_circle,
+                                                                      size: width *
+                                                                          0.04,
+                                                                      color:
+                                                                          secondaryColor,
+                                                                    ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    );
+                                  }),
                                 ),
                               ),
-                            );
-                          }),
+                            ))),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: width * 0.85,
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: width * 0.02, bottom: height * 0.01),
+                            child: TextFormField(
+                              style: const TextStyle(color: Colors.black),
+                              controller: controller.msgController,
+                              decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                          color: Colors.transparent)),
+                                  fillColor: Colors.white,
+                                  filled: true),
+                            ),
+                          ),
                         ),
-                      ),
-                    ))),
-            Row(
-              children: [
-                SizedBox(
-                  width: width * 0.85,
-                  child: Container(
-                    margin: EdgeInsets.only(
-                        left: width * 0.02, bottom: height * 0.01),
-                    child: TextFormField(
-                      style: const TextStyle(color: Colors.black),
-                      controller: controller.msgController,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide:
-                                  const BorderSide(color: Colors.transparent)),
-                          fillColor: Colors.white,
-                          filled: true),
+                        SizedBox(width: width * 0.01),
+                        CircleAvatar(
+                          child: IconButton(
+                              onPressed: () {
+                                controller.sendMsg(controller.chats.user);
+                              },
+                              icon: Icon(Icons.send)),
+                        )
+                      ],
                     ),
-                  ),
-                ),
-                SizedBox(width: width * 0.01),
-                CircleAvatar(
-                  child: IconButton(
-                      onPressed: () {
-                        controller.sendMsg(controller.chats.user);
-                      },
-                      icon: Icon(Icons.send)),
-                )
-              ],
-            ),
-          ],
-        ),
+                  ],
+                );
+        }),
       ),
     );
   }

@@ -14,6 +14,8 @@ import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class ChatViewController extends GetxController
     with StateMixin<List<ChatMessage>> {
+  bool isDeleting = false;
+  bool isSending = false;
   Rx<bool> isEmojiVisible = true.obs;
   FocusNode focusNode = FocusNode();
   TextEditingController msgController = TextEditingController();
@@ -21,6 +23,7 @@ class ChatViewController extends GetxController
   Uint8List? bytes;
   List bothNumbers = [];
   final AuthController authController = Get.find();
+  RxList<String> allChatDocIds = <String>[].obs;
   // final ScrollController controller = ScrollController();
 
   ChatViewController(this.chats);
@@ -98,6 +101,8 @@ class ChatViewController extends GetxController
         sender: authController.myUser.value!.mobileNumber);
     msgController.text = '';
     try {
+      isSending = true;
+      update();
       change(value?..add(msgModel), status: RxStatus.success());
       await FirebaseFirestore.instance
           .collection('users')
@@ -133,24 +138,82 @@ class ChatViewController extends GetxController
                   msgModel.time)
               .toMap());
       msgController.clear();
-
+      await FlutterRingtonePlayer.play(fromAsset: 'assets/sounds/sent.mp3');
+      isSending = false;
+      update();
       // await controller.position.moveTo(controller.position.maxScrollExtent);
     } catch (e) {
       Get.snackbar('Error', e.toString());
       msgController.clear();
+      isSending = false;
+      update();
     } finally {
       msgController.clear();
     }
   }
 
+  Future<void> deleteMsg(
+      {required String docId, required String receiver}) async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.currentUser!.displayName)
+        .collection('chats')
+        .doc(receiver)
+        .collection('messages')
+        .doc(docId)
+        .update({'msg': 'This message was deleted'});
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiver)
+        .collection('chats')
+        .doc(authController.currentUser!.displayName)
+        .collection('messages')
+        .doc(docId)
+        .update({'msg': 'This message was deleted'});
+  }
+
   Future<void> deleteChat({required String receiver}) async {
+    isDeleting = true;
+    update();
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(authController.currentUser!.displayName)
+        .collection('chats')
+        .doc(receiver)
+        .collection('messages')
+        .get()
+        .then((value) {
+      for (DocumentSnapshot ds in value.docs) {
+        ds.reference.delete();
+      }
+    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiver)
+        .collection('chats')
+        .doc(authController.currentUser!.displayName)
+        .collection('messages')
+        .get()
+        .then((value) {
+      for (DocumentSnapshot ds in value.docs) {
+        ds.reference.delete();
+      }
+    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiver)
+        .collection('chats')
+        .doc(authController.currentUser!.displayName)
+        .delete();
     await FirebaseFirestore.instance
         .collection('users')
         .doc(authController.currentUser!.displayName)
         .collection('chats')
         .doc(receiver)
         .delete();
-    Get.offAll(HomePage());
+
+    Get.offAll(const HomePage());
+    isDeleting = false;
   }
 
   ContactController contactController = Get.find();
@@ -168,11 +231,9 @@ class ChatViewController extends GetxController
         .collection('messages')
         .orderBy('time')
         .get());
-    print(authController.myUser.value!.mobileNumber);
-    print(chats.chat.reciever);
+
     change(query.docs.map((e) => ChatMessage.fromMap(e.data())).toList(),
         status: RxStatus.success());
-    print("World");
     (FirebaseFirestore.instance
         .collection('users')
         .doc(chats.chat.reciever)
@@ -180,18 +241,16 @@ class ChatViewController extends GetxController
         .doc(authController.myUser.value!.mobileNumber)
         .collection('messages')
         .orderBy('time')
-        // .startAfterDocument(lastLoadedDoc!)
-        // .limit(50)
         .snapshots()
         .listen((event) {
-      // final listNewDocs = event.docChanges;
       if (event.docs.last.data()['sender'] !=
           authController.myUser.value!.mobileNumber) {
-        FlutterRingtonePlayer.playNotification();
+        FlutterRingtonePlayer.play(fromAsset: 'assets/sounds/receive.mp3');
       }
       final allChat =
           event.docs.map((e) => ChatMessage.fromMap(e.data())).toList();
       change(allChat, status: RxStatus.success());
+      allChatDocIds.value = event.docs.map((e) => e.id).toList();
 
       if (allChat.any((element) => element.status == Status.unread)) {
         setStatusRead();

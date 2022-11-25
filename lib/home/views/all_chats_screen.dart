@@ -1,6 +1,7 @@
 import 'package:custom_messenger/chat/views/chat_view.dart';
 import 'package:custom_messenger/contact/views/contact_view.dart';
 import 'package:custom_messenger/home/controller/all_chat_controller.dart';
+import 'package:custom_messenger/utils/showImage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -42,7 +43,10 @@ class AllChatsScreen extends StatelessWidget {
                   }),
                 ),
                 leading: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => ShowImage(
+                        imageUrl: controller.chats![index].user.profilePicUrl));
+                  },
                   child: CircleAvatar(
                     radius: 30,
                     backgroundImage: NetworkImage(
@@ -50,7 +54,7 @@ class AllChatsScreen extends StatelessWidget {
                   ),
                 ),
                 title: Text(controller.chats![index].user.name,
-                    style: TextStyle(color: Colors.black)),
+                    style: const TextStyle(color: Colors.black)),
                 subtitle: Text(
                   controller.chats![index].chat.lastSend,
                   style: const TextStyle(color: Colors.grey),

@@ -1,6 +1,6 @@
-import 'package:custom_messenger/call/controller/theme_controller.dart';
-import 'package:custom_messenger/call/model/color_model.dart';
-import 'package:custom_messenger/call/view/restart_widget.dart';
+import 'package:custom_messenger/settings/controller/theme_controller.dart';
+import 'package:custom_messenger/settings/model/color_model.dart';
+import 'package:custom_messenger/settings/view/restart_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
