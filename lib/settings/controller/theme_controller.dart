@@ -4,7 +4,6 @@ import 'package:custom_messenger/settings/model/color_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:dynamic_icon_flutter/dynamic_icon_flutter.dart';
